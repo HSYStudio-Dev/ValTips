@@ -1,0 +1,98 @@
+# Detekt 룰 설정
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+output-reports:
+  active: true # 리포트 출력 활성화
+  exclude:
+    - 'TxtOutputReport' # 텍스트 리포트 제외
+    - 'XmlOutputReport' # XML 리포트 제외
+
+complexity:
+  active: true # 복잡도 관련 규칙 전체 활성화
+  ComplexCondition:
+    active: true # 조건식(if/when) 안의 연산자 개수 제한
+    threshold: 5 # 조건식에 논리 연산(AND/OR)이 5개 이상이면 경고
+  ComplexMethod:
+    active: true # 함수 복잡도 제한
+    threshold: 20 # 복잡도가 20 이상이면 경고
+  LargeClass:
+    active: true # 클래스 길이 제한
+    threshold: 800 # 클래스가 800줄 이상이면 경고
+  LongMethod:
+    active: true # 함수 길이 제한
+    threshold: 40 # 함수가 40줄 이상이면 경고
+  LongParameterList:
+    active: true # 함수/생성자 매개변수 개수 제한
+    functionThreshold: 6 # 함수 인자 6개 이상이면 경고
+    constructorThreshold: 8 # 생성자 인자 8개 이상이면 경고
+    ignoreDataClasses: true # Data class 생성자는 허용
+  NestedBlockDepth:
+    active: true # 블록 중첩 깊이 제한
+    threshold: 4 # if/when/for 등 4단계 이상 중첩되면 경고
+  TooManyFunctions:
+    active: true # 함수 개수 제한
+    thresholdInFiles: 40 # 파일당 함수 40개 이상이면 경고
+    thresholdInClasses: 25 # 클래스당 함수 25개 이상이면 경고
+    thresholdInInterfaces: 15 # 인터페이스 함수 15개 이상이면 경고
+    thresholdInObjects: 25 # object 함수 25개 이상이면 경고
+    thresholdInEnums: 10 # enum에 함수 10개 이상이면 경고
+    ignorePrivate: true # private 함수는 개수 제한에서 제외
+
+coroutines:
+  active: true # 코루틴 관련 규칙 전체 활성화
+  GlobalCoroutineUsage:
+    active: true # GlobalScope 사용 금지
+  RedundantSuspendModifier:
+    active: true # suspend 불필요한 함수에 suspend 붙이면 경고
+  SleepInsteadOfDelay:
+    active: true # 코루틴 안에서 Thread.sleep 사용 금지 → delay 사용
+  SuspendFunWithFlowReturnType:
+    active: true # suspend fun이 Flow를 리턴하는 경우 금지
+
+empty-blocks:
+  active: true # 빈 블록 관련 규칙 전체 활성화
+  EmptyFunctionBlock:
+    active: false # 빈 함수 허용
+  EmptyClassBlock:
+    active: false # 빈 클래스 허용
+  EmptyKtFile:
+    active: true # 완전히 빈 파일은 금지
+
+naming:
+  active: true # 네이밍 규칙 전체 활성화
+  BooleanPropertyNaming:
+    active: true # Boolean 변수는 is/has/can 같은 접두어 권장
+  NonBooleanPropertyPrefixedWithIs:
+    active: true # Boolean이 아닌데 is~로 시작하면 경고
+  FunctionNaming:
+    active: true # 함수 이름 규칙 활성화
+    functionPattern: '[a-z][a-zA-Z0-9]*' # 함수는 camelCase로 작성
+    ignoreAnnotated:
+      - Composable # @Composable 함수는 제외
+  VariableNaming:
+    active: true # 변수 이름 규칙 활성화
+    variablePattern: '[a-z][A-Za-z0-9]*' # 변수는 camelCase로 작성
+
+performance:
+  active: true # 성능 관련 규칙 전체 활성화
+  SpreadOperator:
+    active: false # *array 허용
+  ForEachOnRange:
+    active: true # range.forEach 금지 → 일반 for문
+
+potential-bugs:
+  active: true # 잠재적 버그 관련 규칙 전체 활성화
+  HasPlatformType:
+    active: true # 자바 interop에서 타입 명시 안 하면 경고
+  LateinitUsage:
+    active: false # lateinit 사용 허용
+  UnsafeCast:
+    active: true # ClassCastException 가능성 있는 unsafe cast 금지
+
+style:
+  active: false # 코드 포맷/스타일 관련 규칙은 비활성화

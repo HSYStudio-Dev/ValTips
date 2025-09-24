@@ -1,0 +1,36 @@
+# Ktlint 룰 설정
+root = true
+
+# =====
+# [공용]
+# =====
+[*.{kt,kts}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+
+# 코드 스타일
+ktlint_code_style = ktlint_official
+
+# @Composable 함수는 PascalCase 허용
+ktlint_function_naming_ignore_when_annotated_with = Composable
+
+# 임포트 정렬 끄기
+ktlint_standard_import-ordering = disabled
+# 와일드카드 금지
+ktlint_standard_no-wildcard-imports = enabled
+
+# ===========
+# [테스트 코드]
+# ===========
+[{**/src/test/**.kt,**/src/androidTest/**.kt,**/src/commonTest/**.kt}]
+# 임포트 정렬 끄기
+ktlint_standard_import-ordering = disabled
+
+# 테스트에서는 와일드카드 허용
+ktlint_standard_no-wildcard-imports = disabled
