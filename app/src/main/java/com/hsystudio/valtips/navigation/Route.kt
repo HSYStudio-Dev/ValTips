@@ -1,0 +1,8 @@
+package com.hsystudio.valtips.navigation
+
+object Route {
+    const val SPLASH = "splash"
+    const val ONBOARDING = "onboarding"
+    const val LOGIN = "login"
+    const val HOME = "home"
+}
