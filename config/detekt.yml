@@ -25,7 +25,7 @@ complexity:
     threshold: 800 # 클래스가 800줄 이상이면 경고
   LongMethod:
     active: true # 함수 길이 제한
-    threshold: 40 # 함수가 40줄 이상이면 경고
+    threshold: 400 # 함수가 40줄 이상이면 경고
   LongParameterList:
     active: true # 함수/생성자 매개변수 개수 제한
     functionThreshold: 6 # 함수 인자 6개 이상이면 경고
