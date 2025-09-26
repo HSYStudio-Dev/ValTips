@@ -1,4 +1,4 @@
-package com.hsystudio.valtips.feature.login
+package com.hsystudio.valtips.feature.login.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,7 +28,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hsystudio.valtips.R
+import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.theme.ColorBG
 import com.hsystudio.valtips.ui.theme.ColorRed
 import kotlinx.coroutines.delay
@@ -37,8 +40,14 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onNavigateToOnBoarding: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
+    // 온보딩 완료 여부 확인
+    val isOnboardingCompleted by viewModel.onboardingCompleted.collectAsState()
+    // 로그인 여부 확인(임시)
+    val isLoggedIn = false
+
     var startAnimation by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -46,10 +55,6 @@ fun SplashScreen(
         startAnimation = true
         delay(2000)
 
-        // 온보딩 완료 여부 확인 (임시)
-        val isOnboardingCompleted = false
-        // 로그인 여부 확인 (임시)
-        val isLoggedIn = false
         // 분기 조건
         when {
             !isOnboardingCompleted -> onNavigateToOnBoarding()

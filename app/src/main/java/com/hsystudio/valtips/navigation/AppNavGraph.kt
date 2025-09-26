@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.hsystudio.valtips.feature.login.SplashScreen
+import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
+import com.hsystudio.valtips.feature.login.ui.SplashScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {
@@ -12,8 +13,8 @@ fun AppNavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Route.SPLASH
     ) {
+        // Splash
         composable(Route.SPLASH) {
-            // Splash
             SplashScreen(
                 onNavigateToOnBoarding = {
                     navController.navigate(Route.ONBOARDING) {
@@ -27,6 +28,16 @@ fun AppNavGraph(navController: NavHostController) {
                 },
                 onNavigateToHome = {
                     navController.navigate(Route.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+        // Onboarding
+        composable(Route.ONBOARDING) {
+            OnboardingScreen(
+                onStart = {
+                    navController.navigate(Route.LOGIN) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
