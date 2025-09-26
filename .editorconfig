@@ -37,6 +37,8 @@ ktlint_standard_function-signature = disabled
 ktlint_standard_spacing-between-declarations-with-comments = disabled
 # 연속 공백 허용
 ktlint_standard_no-multi-spaces = disabled
+# 주석/어노테이션 줄바꿈 해제
+ktlint_standard_annotation = disabled
 
 # ===========
 # [테스트 코드]
