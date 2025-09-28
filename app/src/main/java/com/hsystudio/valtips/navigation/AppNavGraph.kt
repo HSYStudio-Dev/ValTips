@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
 
@@ -42,6 +43,20 @@ fun AppNavGraph(navController: NavHostController) {
                     }
                 }
             )
+        }
+        // Login
+        composable(Route.LOGIN) {
+            LoginScreen(
+                onNavigateToHome = {
+                    navController.navigate(Route.HOME) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // Home(전적)
+        composable(Route.HOME) {
         }
     }
 }
