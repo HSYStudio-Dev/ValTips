@@ -39,14 +39,19 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.hsystudio.valtips.R
+import com.hsystudio.valtips.di.ImageLoaderEntryPoint
 import com.hsystudio.valtips.feature.login.ui.dialog.HelpDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
 import com.hsystudio.valtips.ui.theme.TextBlack
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
+import com.hsystudio.valtips.util.PrefetchImages
+import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.delay
 
 @Composable
@@ -55,7 +60,14 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val density = LocalDensity.current
+    val appContext = context.applicationContext
+
+    // ImageLoader 호출
+    val imageLoader: ImageLoader = remember {
+        EntryPointAccessors
+            .fromApplication(appContext, ImageLoaderEntryPoint::class.java)
+            .imageLoader()
+    }
 
     val portraitUrls by viewModel.portraitUrls.collectAsState()
     var currentIndex by remember { mutableIntStateOf(0) }
@@ -98,6 +110,20 @@ fun LoginScreen(
             maxHeight < 800.dp -> 72.sp
             else -> 96.sp
         }
+
+        // 이미지 사이즈 (3:4 비율)
+        val density = LocalDensity.current
+        val widthPx = with(density) { maxWidth.roundToPx() }
+        val heightPx = (widthPx * 4f / 3f).toInt()
+
+        // 이미지 사전 로드
+        PrefetchImages(
+            imageLoader = imageLoader,
+            urls = portraitUrls,
+            widthPx = widthPx,
+            heightPx = heightPx
+        )
+
         // 배경
         Box(
             modifier = Modifier
@@ -121,7 +147,13 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxSize()
                 ) { index ->
                     AsyncImage(
-                        model = portraitUrls[index],
+                        model = ImageRequest.Builder(context)
+                            .data(portraitUrls[index])
+                            .size(widthPx, heightPx)
+                            .memoryCacheKey("${portraitUrls[index]}-$widthPx-$heightPx")
+                            .diskCacheKey("${portraitUrls[index]}-$widthPx-$heightPx")
+                            .build(),
+                        imageLoader = imageLoader,
                         contentDescription = "요원 이미지",
                         modifier = Modifier
                             .fillMaxSize()
