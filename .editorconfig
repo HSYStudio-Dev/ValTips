@@ -39,6 +39,8 @@ ktlint_standard_spacing-between-declarations-with-comments = disabled
 ktlint_standard_no-multi-spaces = disabled
 # 주석/어노테이션 줄바꿈 해제
 ktlint_standard_annotation = disabled
+# 체인 메서드 줄바꿈 검사 해제
+ktlint_standard_chain-method-continuation = disabled
 
 # ===========
 # [테스트 코드]
