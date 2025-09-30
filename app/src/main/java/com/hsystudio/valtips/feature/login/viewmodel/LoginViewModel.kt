@@ -23,8 +23,7 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
     // 온보딩 완료 여부
     val onboardingCompleted: StateFlow<Boolean> =
-        userInfoManager
-            .onboardingCompletedFlow()
+        userInfoManager.onboardingCompletedFlow()
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),

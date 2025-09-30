@@ -21,12 +21,11 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(
         @ApplicationContext context: Context
-    ): AppDatabase = Room
-        .databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            "valtips.db"
-        ).build()
+    ): AppDatabase = Room.databaseBuilder(
+        context,
+        AppDatabase::class.java,
+        "valtips.db"
+    ).build()
 
     @Provides
     fun provideAgentDao(db: AppDatabase): AgentDao = db.agentDao()

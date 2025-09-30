@@ -36,8 +36,7 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(
         logging: HttpLoggingInterceptor
-    ): OkHttpClient = OkHttpClient
-        .Builder()
+    ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -49,8 +48,7 @@ object NetworkModule {
     fun provideValorantRetrofit(
         client: OkHttpClient,
         json: Json
-    ): Retrofit = Retrofit
-        .Builder()
+    ): Retrofit = Retrofit.Builder()
         .baseUrl(BuildConfig.VALORANT_BASE_URL)
         .client(client)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
