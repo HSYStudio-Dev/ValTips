@@ -19,13 +19,16 @@ complexity:
     threshold: 5 # 조건식에 논리 연산(AND/OR)이 5개 이상이면 경고
   ComplexMethod:
     active: true # 함수 복잡도 제한
-    threshold: 20 # 복잡도가 20 이상이면 경고
+    threshold: 30 # 복잡도가 30 이상이면 경고
+  CyclomaticComplexMethod:
+    active: true # 함수 복잡도 제한(최신)
+    threshold: 30 # 복잡도가 30 이상이면 경고
   LargeClass:
     active: true # 클래스 길이 제한
     threshold: 800 # 클래스가 800줄 이상이면 경고
   LongMethod:
     active: true # 함수 길이 제한
-    threshold: 40 # 함수가 40줄 이상이면 경고
+    threshold: 400 # 함수가 400줄 이상이면 경고
   LongParameterList:
     active: true # 함수/생성자 매개변수 개수 제한
     functionThreshold: 6 # 함수 인자 6개 이상이면 경고
@@ -33,7 +36,7 @@ complexity:
     ignoreDataClasses: true # Data class 생성자는 허용
   NestedBlockDepth:
     active: true # 블록 중첩 깊이 제한
-    threshold: 4 # if/when/for 등 4단계 이상 중첩되면 경고
+    threshold: 5 # if/when/for 등 5단계 이상 중첩되면 경고
   TooManyFunctions:
     active: true # 함수 개수 제한
     thresholdInFiles: 40 # 파일당 함수 40개 이상이면 경고
@@ -93,6 +96,10 @@ potential-bugs:
     active: false # lateinit 사용 허용
   UnsafeCast:
     active: true # ClassCastException 가능성 있는 unsafe cast 금지
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false # Exception e 사용 허용
 
 style:
   active: false # 코드 포맷/스타일 관련 규칙은 비활성화

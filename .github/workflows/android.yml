@@ -29,6 +29,10 @@ jobs:
       - name: Gradlew permission
         run: chmod +x gradlew
 
+      - name: Create local.properties
+        run: |
+          printf 'VALORANT_BASE_URL="%s"\n' "${{ secrets.VALORANT_BASE_URL }}" >> local.properties
+
       - name: Assemble Debug
         run: ./gradlew assembleDebug
 

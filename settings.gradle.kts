@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "ValTips"
 include(":app")
- 
