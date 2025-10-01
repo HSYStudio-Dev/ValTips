@@ -31,7 +31,7 @@ jobs:
 
       - name: Create local.properties
         run: |
-          echo "VALORANT_BASE_URL=${{ secrets.VALORANT_BASE_URL }}" >> local.properties
+          printf 'VALORANT_BASE_URL="%s"\n' "${{ secrets.VALORANT_BASE_URL }}" >> local.properties
 
       - name: Assemble Debug
         run: ./gradlew assembleDebug
