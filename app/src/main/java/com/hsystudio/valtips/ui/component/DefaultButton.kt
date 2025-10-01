@@ -38,7 +38,7 @@ fun DefaultButton(
         Text(
             text = text,
             color = Color.White,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.bodyLarge,
             maxLines = 1
         )
     }
