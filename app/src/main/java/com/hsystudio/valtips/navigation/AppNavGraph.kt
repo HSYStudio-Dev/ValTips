@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
+import com.hsystudio.valtips.feature.stats.ui.StatsScreen
 import com.hsystudio.valtips.ui.component.bar.AppBottomBar
 import com.hsystudio.valtips.ui.component.bar.BottomNavItems
 
@@ -86,6 +87,7 @@ fun AppNavGraph(navController: NavHostController) {
 
             // Home(전적)
             composable(Route.HOME) {
+                StatsScreen()
             }
 
             // Agent
