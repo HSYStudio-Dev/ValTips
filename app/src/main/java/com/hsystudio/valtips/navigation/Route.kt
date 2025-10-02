@@ -5,4 +5,7 @@ object Route {
     const val ONBOARDING = "onboarding"
     const val LOGIN = "login"
     const val HOME = "home"
+    const val AGENT = "agent"
+    const val MAP = "map"
+    const val SETTING = "setting"
 }
