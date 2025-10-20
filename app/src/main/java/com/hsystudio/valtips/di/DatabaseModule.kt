@@ -2,11 +2,11 @@ package com.hsystudio.valtips.di
 
 import android.content.Context
 import androidx.room.Room
-import com.hsystudio.valtips.data.local.AgentDao
-import com.hsystudio.valtips.data.local.AppDatabase
-import com.hsystudio.valtips.data.remote.ValorantApi
-import com.hsystudio.valtips.data.repository.ValorantRepositoryImpl
-import com.hsystudio.valtips.domain.repository.ValorantRepository
+import androidx.room.RoomDatabase
+import com.hsystudio.valtips.data.local.dao.AbilityDao
+import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.RoleDao
+import com.hsystudio.valtips.data.local.db.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,6 +17,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+    private const val DB_NAME = "valtips.db"
+
     @Provides
     @Singleton
     fun provideDatabase(
@@ -24,16 +26,17 @@ object DatabaseModule {
     ): AppDatabase = Room.databaseBuilder(
         context,
         AppDatabase::class.java,
-        "valtips.db"
-    ).build()
+        DB_NAME
+    )
+        .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
+        .build()
 
     @Provides
     fun provideAgentDao(db: AppDatabase): AgentDao = db.agentDao()
 
     @Provides
-    @Singleton
-    fun provideAgentRepository(
-        api: ValorantApi,
-        dao: AgentDao
-    ): ValorantRepository = ValorantRepositoryImpl(api, dao)
+    fun provideRoleDao(db: AppDatabase): RoleDao = db.roleDao()
+
+    @Provides
+    fun provideAbilityDao(db: AppDatabase): AbilityDao = db.abilityDao()
 }

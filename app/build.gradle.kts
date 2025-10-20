@@ -27,8 +27,8 @@ android {
 
         buildConfigField(
             "String",
-            "VALORANT_BASE_URL",
-            gradleLocalProperties(rootDir, providers).getProperty("VALORANT_BASE_URL")
+            "BASE_URL",
+            gradleLocalProperties(rootDir, providers).getProperty("BASE_URL")
         )
     }
 
