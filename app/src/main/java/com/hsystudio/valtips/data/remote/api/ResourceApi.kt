@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.data.remote.api
 
 import com.hsystudio.valtips.data.remote.dto.AgentDto
+import com.hsystudio.valtips.data.remote.dto.GameModeDto
 import com.hsystudio.valtips.data.remote.dto.MapDto
 import com.hsystudio.valtips.data.remote.dto.ResourceInfoDto
 import com.hsystudio.valtips.data.remote.dto.SyncResponse
@@ -37,4 +38,8 @@ interface ResourceApi {
     // 전체 동기화: 티어 전체
     @GET("tiers/")
     suspend fun getTiers(): List<TierDto>
+
+    // 전체 동기화: 게임 모드 전체
+    @GET("gamemodes/")
+    suspend fun getGameModes(): List<GameModeDto>
 }

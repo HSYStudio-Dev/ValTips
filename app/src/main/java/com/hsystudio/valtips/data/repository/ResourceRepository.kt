@@ -43,6 +43,7 @@ class ResourceRepository @Inject constructor(
         val agents = api.getAgents()
         val maps = api.getMaps()
         val tiers  = api.getTiers()
+        val gameModes = api.getGameModes()
 
         // 1) 이미지 작업
         val imageTasks = buildList {
@@ -65,6 +66,10 @@ class ResourceRepository @Inject constructor(
             tiers.forEach { t ->
                 t.largeIcon?.let { add(it to "tier_${t.tier}_large.png") }
             }
+            // Game Modes
+            gameModes.forEach { gm ->
+                gm.displayIcon?.let { add(it to "gm_${gm.uuid}_icon.png") }
+            }
         }
 
         // 2) 다운로드 (강제 새로 받기)
@@ -83,6 +88,7 @@ class ResourceRepository @Inject constructor(
             db.mapCalloutDao().clearAll()
             db.mapDao().clearAll()
             db.tierDao().clearAll()
+            db.gameModeDao().clearAll()
 
             // Roles
             val roleEntities = agents.map { it.role }
@@ -134,6 +140,12 @@ class ResourceRepository @Inject constructor(
                 t.toEntity(localIconPath = t.largeIcon?.let { downloaded[it] })
             }
             db.tierDao().upsert(tierEntities)
+
+            // Game Modes
+            val gmEntities = gameModes.map { gm ->
+                gm.toEntity(localIconPath = gm.displayIcon?.let { downloaded[it] })
+            }
+            db.gameModeDao().upsert(gmEntities)
         }
 
         // 4) 최신 타임스탬프
@@ -193,6 +205,10 @@ class ResourceRepository @Inject constructor(
             delta.tiers.forEach { t ->
                 t.largeIcon?.let { add(it to "tier_${t.tier}_large.png") }
             }
+            // Game Modes
+            delta.gameModes.forEach { gm ->
+                gm.displayIcon?.let { add(it to "gm_${gm.uuid}_icon.png") }
+            }
         }
 
         // 2) 다운로드 (강제 새로 받기)
@@ -209,6 +225,7 @@ class ResourceRepository @Inject constructor(
 
         // 3) DB 반영
         db.withTransaction {
+            // Agents
             if (delta.agents.isNotEmpty()) {
                 // Roles
                 val roles = delta.agents.map { it.role }
@@ -240,12 +257,12 @@ class ResourceRepository @Inject constructor(
                 db.abilityDao().upsert(abilities)
             }
 
+            // Maps
             if (delta.maps.isNotEmpty()) {
                 // 각 맵 callouts은 전체 교체
                 delta.maps.forEach { m ->
                     db.mapCalloutDao().clearByMap(m.uuid)
                 }
-
                 // Maps
                 val maps = delta.maps.map { m ->
                     m.toEntity(
@@ -256,19 +273,27 @@ class ResourceRepository @Inject constructor(
                 }
                 db.mapDao().upsert(maps)
 
-                // Callout
+                // Callouts
                 val callouts = delta.maps.flatMap { m ->
                     m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
                 }
                 db.mapCalloutDao().upsert(callouts)
             }
 
+            // tiers
             if (delta.tiers.isNotEmpty()) {
-                // tiers
                 val tierEntities = delta.tiers.map { t ->
                     t.toEntity(localIconPath = t.largeIcon?.let { downloaded[it] })
                 }
                 db.tierDao().upsert(tierEntities)
+            }
+
+            // game modes
+            if (delta.gameModes.isNotEmpty()) {
+                val gmEntities = delta.gameModes.map { gm ->
+                    gm.toEntity(localIconPath = gm.displayIcon?.let { downloaded[it] })
+                }
+                db.gameModeDao().upsert(gmEntities)
             }
         }
 

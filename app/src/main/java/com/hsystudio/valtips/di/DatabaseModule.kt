@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hsystudio.valtips.data.local.dao.AbilityDao
 import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.GameModeDao
 import com.hsystudio.valtips.data.local.dao.MapCalloutDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
@@ -51,4 +52,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTierDao(db: AppDatabase): TierDao = db.tierDao()
+
+    @Provides
+    fun provideGameModeDao(db: AppDatabase): GameModeDao = db.gameModeDao()
 }
