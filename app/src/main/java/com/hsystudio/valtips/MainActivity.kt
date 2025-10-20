@@ -16,7 +16,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ValTipsTheme {
                 val navController = rememberNavController()
-                AppNavGraph(navController)
+                AppNavGraph(
+                    onExitApp = { finishAffinity() },
+                    navController = navController
+                )
             }
         }
     }
