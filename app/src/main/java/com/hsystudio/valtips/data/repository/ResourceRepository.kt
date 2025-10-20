@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class ResourceRepository @Inject constructor(
     private val api: ResourceApi,
     private val db: AppDatabase,
-    private val prefs: AppPrefsManager,
+    private val prefsManager: AppPrefsManager,
     private val imageDownloader: ImageDownloader
 ) {
     private val tag = "ResourceRepository"
@@ -41,9 +41,11 @@ class ResourceRepository @Inject constructor(
         )? = null
     ): Result<Unit> = runCatching {
         val agents = api.getAgents()
+        val maps = api.getMaps()
 
         // 1) 이미지 작업
         val imageTasks = buildList {
+            // Agents
             agents.forEach { a ->
                 a.displayIcon?.let { add(it to "agent_${a.uuid}_icon.png") }
                 a.fullPortrait?.let { add(it to "agent_${a.uuid}_portrait.png") }
@@ -51,6 +53,12 @@ class ResourceRepository @Inject constructor(
                 a.abilities.forEach { ab ->
                     ab.displayIcon?.let { add(it to "ability_${ab.id}.png") }
                 }
+            }
+            // Maps
+            maps.forEach { m ->
+                m.displayIcon?.let { add(it to "map_${m.uuid}_icon.png") }
+                m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
+                m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
             }
         }
 
@@ -67,12 +75,18 @@ class ResourceRepository @Inject constructor(
             db.abilityDao().clearAll()
             db.agentDao().clearAll()
             db.roleDao().clearAll()
+            db.mapCalloutDao().clearAll()
+            db.mapDao().clearAll()
 
-            val roles = agents.map { it.role }.distinctBy { it.uuid }.map { r ->
-                r.toEntity(localIconPath = r.displayIcon?.let { downloaded[it] })
-            }
-            db.roleDao().upsert(roles)
+            // Roles
+            val roleEntities = agents.map { it.role }
+                .distinctBy { it.uuid }
+                .map { r ->
+                    r.toEntity(localIconPath = r.displayIcon?.let { downloaded[it] })
+                }
+            db.roleDao().upsert(roleEntities)
 
+            // Agents
             val agentEntities = agents.map { a ->
                 a.toEntity(
                     roleUuid = a.role.uuid,
@@ -82,6 +96,7 @@ class ResourceRepository @Inject constructor(
             }
             db.agentDao().upsert(agentEntities)
 
+            // Abilities
             val abilityEntities = agents.flatMap { a ->
                 a.abilities.map { ab ->
                     ab.toEntity(
@@ -91,11 +106,27 @@ class ResourceRepository @Inject constructor(
                 }
             }
             db.abilityDao().upsert(abilityEntities)
+
+            // Maps
+            val mapEntities = maps.map { m ->
+                m.toEntity(
+                    localDisplayIconPath = m.displayIcon?.let { downloaded[it] },
+                    localListIconPath = m.listViewIcon?.let { downloaded[it] },
+                    localSplashPath = m.splash?.let { downloaded[it] }
+                )
+            }
+            db.mapDao().upsert(mapEntities)
+
+            // Callout
+            val calloutEntities = maps.flatMap { m ->
+                m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
+            }
+            db.mapCalloutDao().upsert(calloutEntities)
         }
 
         // 4) 최신 타임스탬프
         val updateInfo = api.getUpdatesInfo()
-        prefs.setLastSync(updateInfo.latestTimestamp)
+        prefsManager.setLastSync(updateInfo.latestTimestamp)
     }.onFailure {
         Log.e(tag, "initialSync() 실패", it)
     }
@@ -113,7 +144,7 @@ class ResourceRepository @Inject constructor(
         )? = null
     ): Result<Boolean> = runCatching {
         // 버전 정보 없으면 종료
-        val lastSync = prefs.lastSyncFlow.firstOrNull() ?: return@runCatching false
+        val lastSync = prefsManager.lastSyncFlow.firstOrNull() ?: return@runCatching false
         val updates = api.getUpdatesInfo(lastSync)
 
         val hasUpdates = listOf(
@@ -124,40 +155,54 @@ class ResourceRepository @Inject constructor(
         ).any { it > 0 }
         // 업데이트 내용 없으면 종료
         if (!hasUpdates) {
-            prefs.setLastSync(updates.latestTimestamp)
+            prefsManager.setLastSync(updates.latestTimestamp)
             return@runCatching false
         }
 
         val delta = api.getDelta(lastSync)
-
         // 1) 이미지 작업
-        if (delta.agents.isNotEmpty()) {
-            val imageTasks = buildList {
-                delta.agents.forEach { a ->
-                    a.displayIcon?.let { add(it to "agent_${a.uuid}_icon.png") }
-                    a.fullPortrait?.let { add(it to "agent_${a.uuid}_portrait.png") }
-                    a.role.displayIcon?.let { add(it to "role_${a.role.uuid}_icon.png") }
-                    a.abilities.forEach { ab ->
-                        ab.displayIcon?.let { add(it to "ability_${ab.id}.png") }
-                    }
+        val imageTasks = buildList {
+            // Agents
+            delta.agents.forEach { a ->
+                a.displayIcon?.let { add(it to "agent_${a.uuid}_icon.png") }
+                a.fullPortrait?.let { add(it to "agent_${a.uuid}_portrait.png") }
+                a.role.displayIcon?.let { add(it to "role_${a.role.uuid}_icon.png") }
+                a.abilities.forEach { ab ->
+                    ab.displayIcon?.let { add(it to "ability_${ab.id}.png") }
                 }
             }
+            // Maps
+            delta.maps.forEach { m ->
+                m.displayIcon?.let { add(it to "map_${m.uuid}_icon.png") }
+                m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
+                m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
+            }
+        }
 
-            // 2) 다운로드 (강제 새로 받기)
-            val downloaded = imageDownloader.downloadAll(
+        // 2) 다운로드 (강제 새로 받기)
+        val downloaded = if (imageTasks.isNotEmpty()) {
+            imageDownloader.downloadAll(
                 tasks = imageTasks,
                 concurrency = 6,
                 forceRefresh = true,
                 onProgress = onProgressBytes
             )
+        } else {
+            emptyMap()
+        }
 
-            // 3) DB 반영
-            db.withTransaction {
+        // 3) DB 반영
+        db.withTransaction {
+            if (delta.agents.isNotEmpty()) {
+                // Roles
                 val roles = delta.agents.map { it.role }
                     .distinctBy { it.uuid }
-                    .map { r -> r.toEntity(localIconPath = r.displayIcon?.let { downloaded[it] }) }
+                    .map { r ->
+                        r.toEntity(localIconPath = r.displayIcon?.let { downloaded[it] })
+                    }
                 db.roleDao().upsert(roles)
 
+                // Agents
                 val agents = delta.agents.map { a ->
                     a.toEntity(
                         roleUuid = a.role.uuid,
@@ -167,6 +212,7 @@ class ResourceRepository @Inject constructor(
                 }
                 db.agentDao().upsert(agents)
 
+                // Abilities
                 val abilities = delta.agents.flatMap { a ->
                     a.abilities.map { ab ->
                         ab.toEntity(
@@ -177,10 +223,33 @@ class ResourceRepository @Inject constructor(
                 }
                 db.abilityDao().upsert(abilities)
             }
+
+            if (delta.maps.isNotEmpty()) {
+                // 각 맵 callouts은 전체 교체
+                delta.maps.forEach { m ->
+                    db.mapCalloutDao().clearByMap(m.uuid)
+                }
+
+                // Maps
+                val maps = delta.maps.map { m ->
+                    m.toEntity(
+                        localDisplayIconPath = m.displayIcon?.let { downloaded[it] },
+                        localListIconPath = m.listViewIcon?.let { downloaded[it] },
+                        localSplashPath = m.splash?.let { downloaded[it] }
+                    )
+                }
+                db.mapDao().upsert(maps)
+
+                // Callout
+                val callouts = delta.maps.flatMap { m ->
+                    m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
+                }
+                db.mapCalloutDao().upsert(callouts)
+            }
         }
 
         // 4) 최신 타임스탬프
-        prefs.setLastSync(updates.latestTimestamp)
+        prefsManager.setLastSync(updates.latestTimestamp)
         true
     }.onFailure {
         Log.e(tag, "deltaSync() 실패", it)

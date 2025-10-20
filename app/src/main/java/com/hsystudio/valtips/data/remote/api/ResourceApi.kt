@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.data.remote.api
 
 import com.hsystudio.valtips.data.remote.dto.AgentDto
+import com.hsystudio.valtips.data.remote.dto.MapDto
 import com.hsystudio.valtips.data.remote.dto.ResourceInfoDto
 import com.hsystudio.valtips.data.remote.dto.SyncResponse
 import com.hsystudio.valtips.data.remote.dto.UpdatesInfoDto
@@ -27,4 +28,8 @@ interface ResourceApi {
     // 전체 동기화: 요원 전체
     @GET("agents/")
     suspend fun getAgents(): List<AgentDto>
+
+    // 전체 동기화: 맵 전체
+    @GET("maps/")
+    suspend fun getMaps(): List<MapDto>
 }

@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.hsystudio.valtips.data.local.dao.AbilityDao
 import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.MapCalloutDao
+import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
 import com.hsystudio.valtips.data.local.db.AppDatabase
 import dagger.Module
@@ -39,4 +41,10 @@ object DatabaseModule {
 
     @Provides
     fun provideAbilityDao(db: AppDatabase): AbilityDao = db.abilityDao()
+
+    @Provides
+    fun provideMapDao(db: AppDatabase): MapDao = db.mapDao()
+
+    @Provides
+    fun provideMapCalloutDao(db: AppDatabase): MapCalloutDao = db.mapCalloutDao()
 }
