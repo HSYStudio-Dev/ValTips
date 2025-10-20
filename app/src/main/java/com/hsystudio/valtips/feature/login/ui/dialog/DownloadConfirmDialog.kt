@@ -21,6 +21,7 @@ import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
+import java.util.Locale
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -49,7 +50,7 @@ fun DownloadConfirmDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "${sizeMb?.let { String.format("%.2f", it) } ?: "--"}MB",
+                    "${sizeMb?.let { String.format(Locale.US, "%.2f", it) } ?: "--"}MB",
                     color = ColorRed,
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center

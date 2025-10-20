@@ -20,10 +20,6 @@ import com.hsystudio.valtips.feature.stats.ui.StatsScreen
 import com.hsystudio.valtips.ui.component.bar.AppBottomBar
 import com.hsystudio.valtips.ui.component.bar.BottomNavItems
 
-object Graph {
-    const val AUTH = "auth_graph"
-}
-
 @Composable
 fun AppNavGraph(
     onExitApp: () -> Unit,
