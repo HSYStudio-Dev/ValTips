@@ -8,6 +8,7 @@ import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.MapCalloutDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
+import com.hsystudio.valtips.data.local.dao.TierDao
 import com.hsystudio.valtips.data.local.db.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -47,4 +48,7 @@ object DatabaseModule {
 
     @Provides
     fun provideMapCalloutDao(db: AppDatabase): MapCalloutDao = db.mapCalloutDao()
+
+    @Provides
+    fun provideTierDao(db: AppDatabase): TierDao = db.tierDao()
 }

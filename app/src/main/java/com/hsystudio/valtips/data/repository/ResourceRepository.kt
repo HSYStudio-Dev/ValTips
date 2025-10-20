@@ -42,6 +42,7 @@ class ResourceRepository @Inject constructor(
     ): Result<Unit> = runCatching {
         val agents = api.getAgents()
         val maps = api.getMaps()
+        val tiers  = api.getTiers()
 
         // 1) 이미지 작업
         val imageTasks = buildList {
@@ -60,6 +61,10 @@ class ResourceRepository @Inject constructor(
                 m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
                 m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
             }
+            // Tiers
+            tiers.forEach { t ->
+                t.largeIcon?.let { add(it to "tier_${t.tier}_large.png") }
+            }
         }
 
         // 2) 다운로드 (강제 새로 받기)
@@ -77,6 +82,7 @@ class ResourceRepository @Inject constructor(
             db.roleDao().clearAll()
             db.mapCalloutDao().clearAll()
             db.mapDao().clearAll()
+            db.tierDao().clearAll()
 
             // Roles
             val roleEntities = agents.map { it.role }
@@ -122,6 +128,12 @@ class ResourceRepository @Inject constructor(
                 m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
             }
             db.mapCalloutDao().upsert(calloutEntities)
+
+            // Tiers
+            val tierEntities = tiers.map { t ->
+                t.toEntity(localIconPath = t.largeIcon?.let { downloaded[it] })
+            }
+            db.tierDao().upsert(tierEntities)
         }
 
         // 4) 최신 타임스탬프
@@ -176,6 +188,10 @@ class ResourceRepository @Inject constructor(
                 m.displayIcon?.let { add(it to "map_${m.uuid}_icon.png") }
                 m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
                 m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
+            }
+            // Tiers
+            delta.tiers.forEach { t ->
+                t.largeIcon?.let { add(it to "tier_${t.tier}_large.png") }
             }
         }
 
@@ -245,6 +261,14 @@ class ResourceRepository @Inject constructor(
                     m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
                 }
                 db.mapCalloutDao().upsert(callouts)
+            }
+
+            if (delta.tiers.isNotEmpty()) {
+                // tiers
+                val tierEntities = delta.tiers.map { t ->
+                    t.toEntity(localIconPath = t.largeIcon?.let { downloaded[it] })
+                }
+                db.tierDao().upsert(tierEntities)
             }
         }
 

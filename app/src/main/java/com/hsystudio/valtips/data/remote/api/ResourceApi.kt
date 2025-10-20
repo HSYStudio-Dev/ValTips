@@ -4,6 +4,7 @@ import com.hsystudio.valtips.data.remote.dto.AgentDto
 import com.hsystudio.valtips.data.remote.dto.MapDto
 import com.hsystudio.valtips.data.remote.dto.ResourceInfoDto
 import com.hsystudio.valtips.data.remote.dto.SyncResponse
+import com.hsystudio.valtips.data.remote.dto.TierDto
 import com.hsystudio.valtips.data.remote.dto.UpdatesInfoDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -32,4 +33,8 @@ interface ResourceApi {
     // 전체 동기화: 맵 전체
     @GET("maps/")
     suspend fun getMaps(): List<MapDto>
+
+    // 전체 동기화: 티어 전체
+    @GET("tiers/")
+    suspend fun getTiers(): List<TierDto>
 }

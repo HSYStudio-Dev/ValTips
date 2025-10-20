@@ -7,31 +7,36 @@ import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.MapCalloutDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
+import com.hsystudio.valtips.data.local.dao.TierDao
 import com.hsystudio.valtips.data.local.entity.AbilityEntity
 import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.entity.MapCalloutEntity
 import com.hsystudio.valtips.data.local.entity.MapEntity
 import com.hsystudio.valtips.data.local.entity.RoleEntity
+import com.hsystudio.valtips.data.local.entity.TierEntity
 
 @Database(
     entities = [
-        RoleEntity::class,
         AgentEntity::class,
         AbilityEntity::class,
+        RoleEntity::class,
         MapEntity::class,
-        MapCalloutEntity::class
+        MapCalloutEntity::class,
+        TierEntity::class
     ],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun roleDao(): RoleDao
-
     abstract fun agentDao(): AgentDao
 
     abstract fun abilityDao(): AbilityDao
 
+    abstract fun roleDao(): RoleDao
+
     abstract fun mapDao(): MapDao
 
     abstract fun mapCalloutDao(): MapCalloutDao
+
+    abstract fun tierDao(): TierDao
 }
