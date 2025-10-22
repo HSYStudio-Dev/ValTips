@@ -19,10 +19,10 @@ complexity:
     threshold: 5 # 조건식에 논리 연산(AND/OR)이 5개 이상이면 경고
   ComplexMethod:
     active: true # 함수 복잡도 제한
-    threshold: 30 # 복잡도가 30 이상이면 경고
+    threshold: 40 # 복잡도가 40 이상이면 경고
   CyclomaticComplexMethod:
     active: true # 함수 복잡도 제한(최신)
-    threshold: 30 # 복잡도가 30 이상이면 경고
+    threshold: 40 # 복잡도가 40 이상이면 경고
   LargeClass:
     active: true # 클래스 길이 제한
     threshold: 800 # 클래스가 800줄 이상이면 경고

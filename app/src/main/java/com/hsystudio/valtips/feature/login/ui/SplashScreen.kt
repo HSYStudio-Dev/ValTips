@@ -1,6 +1,8 @@
 package com.hsystudio.valtips.feature.login.ui
 
 import android.annotation.SuppressLint
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -9,9 +11,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,44 +32,81 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hsystudio.valtips.R
+import com.hsystudio.valtips.feature.login.model.Destination
+import com.hsystudio.valtips.feature.login.ui.dialog.DownloadConfirmDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.theme.ColorBG
+import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
+import com.hsystudio.valtips.ui.theme.TextGray
 import kotlinx.coroutines.delay
 
-@SuppressLint("UseOfNonLambdaOffsetOverload")
+@SuppressLint("UseOfNonLambdaOffsetOverload", "DefaultLocale")
 @Composable
 fun SplashScreen(
     onNavigateToOnBoarding: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit,
+    onExitApp: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    // 온보딩 완료 여부 확인
-    val isOnboardingCompleted by viewModel.onboardingCompleted.collectAsState()
-    // 로그인 여부 확인(임시)
+    BackHandler(enabled = true) { }
+
+    val context = LocalContext.current
+    val syncRunning by viewModel.syncRunning.collectAsState()
+    val syncPhase by viewModel.syncPhase.collectAsState()
+    val dialogVisible by viewModel.downloadDialogVisible.collectAsState()
+    val sizeMb by viewModel.downloadSizeMb.collectAsState()
+    val networkType by viewModel.networkType.collectAsState()
+    val progressPercent by viewModel.progressPercent.collectAsState()
+    val progressLabel by viewModel.progressLabel.collectAsState()
+
+    // Todo : 추후 RSO 자동 로그인 결과로 수정
     val isLoggedIn = false
+
+    // 에러 토스트
+    LaunchedEffect(Unit) {
+        viewModel.errorEvents.collect { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 종료 이벤트
+    LaunchedEffect(Unit) {
+        viewModel.exitApp.collect {
+            delay(1800)
+            onExitApp()
+        }
+    }
+
+    // 네비게이션 처리
+    LaunchedEffect(Unit) {
+        viewModel.destination.collect { dest ->
+            when (dest) {
+                Destination.ONBOARDING -> onNavigateToOnBoarding()
+                Destination.LOGIN -> onNavigateToLogin()
+                Destination.HOME -> onNavigateToHome()
+            }
+        }
+    }
 
     var startAnimation by remember { mutableStateOf(false) }
 
+    // 로고 애니메이션
     LaunchedEffect(Unit) {
         delay(300)
         startAnimation = true
-        delay(2000)
-
-        // 분기 조건
-        when {
-            !isOnboardingCompleted -> onNavigateToOnBoarding()
-            isOnboardingCompleted && !isLoggedIn -> onNavigateToLogin()
-            isOnboardingCompleted && isLoggedIn -> onNavigateToHome()
-        }
+        delay(1300)
+        viewModel.runStartupFlow(isLoggedIn = isLoggedIn)
     }
 
     // 로고의 offset (Y축 위치)
@@ -105,6 +151,59 @@ fun SplashScreen(
                 )
             }
         }
+
+        // 하단 로딩 영역
+        if (syncRunning || dialogVisible) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 32.dp, start = 24.dp, end = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (syncRunning) {
+                    // 원형 로딩
+                    CircularProgressIndicator(color = TextGray)
+
+                    Spacer(Modifier.height(12.dp))
+                    // 동기화 문구
+                    Text(
+                        text = syncPhase ?: "리소스를 준비 중입니다…",
+                        color = TextGray,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+                    // 선형 로딩
+                    LinearProgressIndicator(
+                        progress = { progressPercent / 100f },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp),
+                        color = ColorMint,
+                        trackColor = TextGray
+                    )
+
+                    Spacer(Modifier.height(6.dp))
+                    // 다운로드 속도
+                    if (progressLabel != null) {
+                        Text(text = progressLabel!!)
+                    }
+                } else {
+                    Spacer(Modifier.height(48.dp))
+                }
+            }
+        }
+    }
+    // 리소스 다운 동의 다이얼로그
+    if (dialogVisible) {
+        DownloadConfirmDialog(
+            sizeMb = sizeMb,
+            networkType = networkType,
+            onConfirm = { viewModel.confirmInitialDownload(isLoggedIn) },
+            onCancel = { viewModel.cancelInitialDownload() }
+        )
     }
 }
 

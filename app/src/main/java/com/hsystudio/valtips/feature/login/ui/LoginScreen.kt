@@ -53,6 +53,7 @@ import com.hsystudio.valtips.ui.theme.TextWhite
 import com.hsystudio.valtips.util.PrefetchImages
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.delay
+import java.io.File
 
 @Composable
 fun LoginScreen(
@@ -69,7 +70,7 @@ fun LoginScreen(
             .imageLoader()
     }
 
-    val portraitUrls by viewModel.portraitUrls.collectAsState()
+    val portraitData by viewModel.portraitData.collectAsState()
     var currentIndex by remember { mutableIntStateOf(0) }
 
     // 안내 사항 다이얼로그 표시 상태
@@ -83,11 +84,11 @@ fun LoginScreen(
     }
 
     // 요원 이미지 자동 전환
-    LaunchedEffect(portraitUrls) {
-        if (portraitUrls.isNotEmpty()) {
+    LaunchedEffect(portraitData) {
+        if (portraitData.isNotEmpty()) {
             while (true) {
                 delay(3000)
-                currentIndex = (currentIndex + 1) % portraitUrls.size
+                currentIndex = (currentIndex + 1) % portraitData.size
             }
         }
     }
@@ -119,7 +120,7 @@ fun LoginScreen(
         // 이미지 사전 로드
         PrefetchImages(
             imageLoader = imageLoader,
-            urls = portraitUrls,
+            urls = portraitData,
             widthPx = widthPx,
             heightPx = heightPx
         )
@@ -140,18 +141,19 @@ fun LoginScreen(
                 alpha = 0.4f
             )
             // 요원 이미지
-            if (portraitUrls.isNotEmpty()) {
+            if (portraitData.isNotEmpty()) {
                 Crossfade(
                     targetState = currentIndex,
                     animationSpec = tween(1000),
                     modifier = Modifier.fillMaxSize()
                 ) { index ->
+                    val data = portraitData[index]
+                    val modelData: Any =
+                        if (data.startsWith("/")) File(data) else data
                     AsyncImage(
                         model = ImageRequest.Builder(context)
-                            .data(portraitUrls[index])
+                            .data(modelData)
                             .size(widthPx, heightPx)
-                            .memoryCacheKey("${portraitUrls[index]}-$widthPx-$heightPx")
-                            .diskCacheKey("${portraitUrls[index]}-$widthPx-$heightPx")
                             .build(),
                         imageLoader = imageLoader,
                         contentDescription = "요원 이미지",
@@ -162,7 +164,6 @@ fun LoginScreen(
                     )
                 }
             } else {
-                // 첫 로딩 중 고정 이미지
                 Image(
                     painter = painterResource(R.drawable.agent_jett),
                     contentDescription = "요원 이미지(고정)",
