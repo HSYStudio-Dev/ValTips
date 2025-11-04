@@ -107,8 +107,8 @@ fun LoginScreen(
             else -> 40.dp
         }
         val titleSize = when {
-            maxHeight < 600.dp -> 56.sp
-            maxHeight < 800.dp -> 72.sp
+            maxWidth < 400.dp -> 56.sp
+            maxWidth < 600.dp -> 72.sp
             else -> 96.sp
         }
 
