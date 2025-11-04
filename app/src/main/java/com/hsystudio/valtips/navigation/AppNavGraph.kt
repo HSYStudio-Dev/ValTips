@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navigation
+import com.hsystudio.valtips.feature.agent.ui.AgentsScreen
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
@@ -47,7 +48,7 @@ fun AppNavGraph(
         NavHost(
             navController = navController,
             startDestination = Graph.AUTH,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             // ───────────────── AUTH GRAPH (Splash → Onboarding → Login) ─────────────────
             navigation(
@@ -126,6 +127,9 @@ fun AppNavGraph(
 
             // Agent
             composable(Route.AGENT) {
+                AgentsScreen(
+                    onAgentClick = {}
+                )
             }
 
             // Map
