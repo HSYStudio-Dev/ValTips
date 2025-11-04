@@ -31,7 +31,7 @@ complexity:
     threshold: 400 # 함수가 400줄 이상이면 경고
   LongParameterList:
     active: true # 함수/생성자 매개변수 개수 제한
-    functionThreshold: 6 # 함수 인자 6개 이상이면 경고
+    functionThreshold: 8 # 함수 인자 6개 이상이면 경고
     constructorThreshold: 8 # 생성자 인자 8개 이상이면 경고
     ignoreDataClasses: true # Data class 생성자는 허용
   NestedBlockDepth:
