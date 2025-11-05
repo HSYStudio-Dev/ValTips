@@ -31,6 +31,7 @@ fun IconChip(
     isSelected: Boolean,
     isAll: Boolean,
     iconLocal: String?,
+    labelWhenNoIcon: String? = null,
     btnSize: Dp = 48.dp,
     iconSize: Dp = 24.dp,
     onClick: () -> Unit
@@ -77,19 +78,37 @@ fun IconChip(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (isAll) {
-                Icon(
-                    painter = painterResource(id = R.drawable.role_all),
-                    contentDescription = "전체",
-                    tint = Color.Unspecified,
-                )
-            } else {
-                AsyncImage(
-                    model = model,
-                    contentDescription = null,
-                    modifier = Modifier.size(iconSize),
-                    contentScale = ContentScale.Fit
-                )
+            when {
+                // 역할 전체
+                isAll -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.role_all),
+                        contentDescription = "전체",
+                        tint = Color.Unspecified
+                    )
+                }
+
+                // 아이콘 이미지 있을 경우
+                model != null -> {
+                    AsyncImage(
+                        model = model,
+                        contentDescription = null,
+                        modifier = Modifier.size(iconSize),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                // 아이콘 이미지 없을 경우
+                !labelWhenNoIcon.isNullOrBlank() -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.passive),
+                        contentDescription = "패시브",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(iconSize)
+                    )
+                }
+
+                else -> Unit
             }
         }
     }
