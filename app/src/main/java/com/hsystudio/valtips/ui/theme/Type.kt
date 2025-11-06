@@ -33,8 +33,8 @@ val ValTipsTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = Valorant,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
-        lineHeight = 22.sp
+        fontSize = 24.sp,
+        lineHeight = 26.4.sp
     ),
 
     // Headline 1

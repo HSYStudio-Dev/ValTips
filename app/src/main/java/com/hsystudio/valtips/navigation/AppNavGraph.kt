@@ -8,10 +8,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.hsystudio.valtips.feature.agent.ui.AgentDetailScreen
+import com.hsystudio.valtips.feature.agent.ui.AgentsScreen
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
@@ -47,7 +51,7 @@ fun AppNavGraph(
         NavHost(
             navController = navController,
             startDestination = Graph.AUTH,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
         ) {
             // ───────────────── AUTH GRAPH (Splash → Onboarding → Login) ─────────────────
             navigation(
@@ -124,8 +128,23 @@ fun AppNavGraph(
                 StatsScreen()
             }
 
-            // Agent
+            /** Agents(요원 리스트) */
             composable(Route.AGENT) {
+                AgentsScreen(
+                    onAgentClick = { agentUuid ->
+                        navController.navigate("agent_detail/$agentUuid")
+                    }
+                )
+            }
+            /** Agent Detail(요원 상세) */
+            composable(
+                route = Route.AGENT_DETAIL,
+                arguments = listOf(navArgument("agentUuid") { type = NavType.StringType })
+            ) {
+                AgentDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onGuideClick = {}
+                )
             }
 
             // Map
