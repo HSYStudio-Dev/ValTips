@@ -4,8 +4,13 @@ object Route {
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
     const val LOGIN = "login"
+
     const val HOME = "home"
+
     const val AGENT = "agent"
+    const val AGENT_DETAIL = "agent_detail/{agentUuid}"
+
     const val MAP = "map"
+
     const val SETTING = "setting"
 }
