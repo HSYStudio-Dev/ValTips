@@ -44,6 +44,7 @@ class ResourceRepository @Inject constructor(
         val maps = api.getMaps()
         val tiers  = api.getTiers()
         val gameModes = api.getGameModes()
+        val act = api.getCurrentAct()
 
         // 1) 이미지 작업
         val imageTasks = buildList {
@@ -89,6 +90,7 @@ class ResourceRepository @Inject constructor(
             db.mapDao().clearAll()
             db.tierDao().clearAll()
             db.gameModeDao().clearAll()
+            db.actDao().clearAll()
 
             // Roles
             val roleEntities = agents.map { it.role }
@@ -146,6 +148,9 @@ class ResourceRepository @Inject constructor(
                 gm.toEntity(localIconPath = gm.displayIcon?.let { downloaded[it] })
             }
             db.gameModeDao().upsert(gmEntities)
+
+            // Act
+            db.actDao().upsert(act.toEntity())
         }
 
         // 4) 최신 타임스탬프
@@ -175,7 +180,8 @@ class ResourceRepository @Inject constructor(
             updates.updateCounts.agents,
             updates.updateCounts.maps,
             updates.updateCounts.tiers,
-            updates.updateCounts.gameModes
+            updates.updateCounts.gameModes,
+            updates.updateCounts.acts
         ).any { it > 0 }
         // 업데이트 내용 없으면 종료
         if (!hasUpdates) {
@@ -295,6 +301,10 @@ class ResourceRepository @Inject constructor(
                 }
                 db.gameModeDao().upsert(gmEntities)
             }
+
+            // Act
+            val actEntity = delta.acts.firstOrNull()?.toEntity()
+            if (actEntity != null) db.actDao().upsert(actEntity)
         }
 
         // 4) 최신 타임스탬프

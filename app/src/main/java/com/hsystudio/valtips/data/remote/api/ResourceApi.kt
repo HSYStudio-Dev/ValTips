@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.data.remote.api
 
 import com.hsystudio.valtips.data.remote.dto.AgentDto
+import com.hsystudio.valtips.data.remote.dto.CurrentActDto
 import com.hsystudio.valtips.data.remote.dto.GameModeDto
 import com.hsystudio.valtips.data.remote.dto.MapDto
 import com.hsystudio.valtips.data.remote.dto.ResourceInfoDto
@@ -42,4 +43,8 @@ interface ResourceApi {
     // 전체 동기화: 게임 모드 전체
     @GET("gamemodes/")
     suspend fun getGameModes(): List<GameModeDto>
+
+    // 전체 동기화: 현재 시즌
+    @GET("act/current")
+    suspend fun getCurrentAct(): CurrentActDto
 }
