@@ -17,6 +17,11 @@ data class MapDto(
     @SerialName("y_multiplier") val yMultiplier: Double? = null,
     @SerialName("x_scalar_to_add") val xScalarToAdd: Double? = null,
     @SerialName("y_scalar_to_add") val yScalarToAdd: Double? = null,
+    @SerialName("recommended_agent_1_id") val recommendedAgent1Id: String? = null,
+    @SerialName("recommended_agent_2_id") val recommendedAgent2Id: String? = null,
+    @SerialName("recommended_agent_3_id") val recommendedAgent3Id: String? = null,
+    @SerialName("recommended_agent_4_id") val recommendedAgent4Id: String? = null,
+    @SerialName("recommended_agent_5_id") val recommendedAgent5Id: String? = null,
     val id: Int,
     val callouts: List<MapCalloutDto> = emptyList()
 )

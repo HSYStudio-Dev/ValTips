@@ -25,6 +25,11 @@ fun MapDto.toEntity(
     yMultiplier = yMultiplier,
     xScalarToAdd = xScalarToAdd,
     yScalarToAdd = yScalarToAdd,
+    recommendedAgent1Uuid = recommendedAgent1Id,
+    recommendedAgent2Uuid = recommendedAgent2Id,
+    recommendedAgent3Uuid = recommendedAgent3Id,
+    recommendedAgent4Uuid = recommendedAgent4Id,
+    recommendedAgent5Uuid = recommendedAgent5Id,
     numericId = id
 )
 
