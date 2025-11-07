@@ -20,6 +20,7 @@ import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
+import com.hsystudio.valtips.feature.map.ui.MapsScreen
 import com.hsystudio.valtips.feature.stats.ui.StatsScreen
 import com.hsystudio.valtips.ui.component.bar.AppBottomBar
 import com.hsystudio.valtips.ui.component.bar.BottomNavItems
@@ -147,8 +148,12 @@ fun AppNavGraph(
                 )
             }
 
-            // Map
+            /** Maps(맵 리스트) */
             composable(Route.MAP) {
+                MapsScreen(
+                    onMapClick = { _ ->
+                    }
+                )
             }
 
             // Setting
