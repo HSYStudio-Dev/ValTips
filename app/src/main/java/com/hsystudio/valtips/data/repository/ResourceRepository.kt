@@ -59,9 +59,12 @@ class ResourceRepository @Inject constructor(
             }
             // Maps
             maps.forEach { m ->
-                m.displayIcon?.let { add(it to "map_${m.uuid}_icon.png") }
                 m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
                 m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
+                m.displayIconAttacker?.let { add(it to "map_${m.uuid}_attacker.png") }
+                m.displayIconDefender?.let { add(it to "map_${m.uuid}_defender.png") }
+                m.displayIconAttackerSmoke?.let { add(it to "map_${m.uuid}_atk_smoke.png") }
+                m.displayIconDefenderSmoke?.let { add(it to "map_${m.uuid}_def_smoke.png") }
             }
             // Tiers
             tiers.forEach { t ->
@@ -86,7 +89,6 @@ class ResourceRepository @Inject constructor(
             db.abilityDao().clearAll()
             db.agentDao().clearAll()
             db.roleDao().clearAll()
-            db.mapCalloutDao().clearAll()
             db.mapDao().clearAll()
             db.tierDao().clearAll()
             db.gameModeDao().clearAll()
@@ -124,18 +126,15 @@ class ResourceRepository @Inject constructor(
             // Maps
             val mapEntities = maps.map { m ->
                 m.toEntity(
-                    localDisplayIconPath = m.displayIcon?.let { downloaded[it] },
                     localListIconPath = m.listViewIcon?.let { downloaded[it] },
-                    localSplashPath = m.splash?.let { downloaded[it] }
+                    localSplashPath = m.splash?.let { downloaded[it] },
+                    localAttackerPath = m.displayIconAttacker?.let { downloaded[it] },
+                    localDefenderPath = m.displayIconDefender?.let { downloaded[it] },
+                    localAttackerSmokePath = m.displayIconAttackerSmoke?.let { downloaded[it] },
+                    localDefenderSmokePath = m.displayIconDefenderSmoke?.let { downloaded[it] }
                 )
             }
             db.mapDao().upsert(mapEntities)
-
-            // Callout
-            val calloutEntities = maps.flatMap { m ->
-                m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
-            }
-            db.mapCalloutDao().upsert(calloutEntities)
 
             // Tiers
             val tierEntities = tiers.map { t ->
@@ -203,9 +202,12 @@ class ResourceRepository @Inject constructor(
             }
             // Maps
             delta.maps.forEach { m ->
-                m.displayIcon?.let { add(it to "map_${m.uuid}_icon.png") }
                 m.listViewIcon?.let { add(it to "map_${m.uuid}_list.png") }
                 m.splash?.let { add(it to "map_${m.uuid}_splash.png") }
+                m.displayIconAttacker?.let { add(it to "map_${m.uuid}_attacker.png") }
+                m.displayIconDefender?.let { add(it to "map_${m.uuid}_defender.png") }
+                m.displayIconAttackerSmoke?.let { add(it to "map_${m.uuid}_atk_smoke.png") }
+                m.displayIconDefenderSmoke?.let { add(it to "map_${m.uuid}_def_smoke.png") }
             }
             // Tiers
             delta.tiers.forEach { t ->
@@ -265,25 +267,17 @@ class ResourceRepository @Inject constructor(
 
             // Maps
             if (delta.maps.isNotEmpty()) {
-                // 각 맵 callouts은 전체 교체
-                delta.maps.forEach { m ->
-                    db.mapCalloutDao().clearByMap(m.uuid)
-                }
-                // Maps
                 val maps = delta.maps.map { m ->
                     m.toEntity(
-                        localDisplayIconPath = m.displayIcon?.let { downloaded[it] },
                         localListIconPath = m.listViewIcon?.let { downloaded[it] },
-                        localSplashPath = m.splash?.let { downloaded[it] }
+                        localSplashPath = m.splash?.let { downloaded[it] },
+                        localAttackerPath = m.displayIconAttacker?.let { downloaded[it] },
+                        localDefenderPath = m.displayIconDefender?.let { downloaded[it] },
+                        localAttackerSmokePath = m.displayIconAttackerSmoke?.let { downloaded[it] },
+                        localDefenderSmokePath = m.displayIconDefenderSmoke?.let { downloaded[it] }
                     )
                 }
                 db.mapDao().upsert(maps)
-
-                // Callouts
-                val callouts = delta.maps.flatMap { m ->
-                    m.callouts.map { co -> co.toEntity(mapUuid = m.uuid) }
-                }
-                db.mapCalloutDao().upsert(callouts)
             }
 
             // tiers

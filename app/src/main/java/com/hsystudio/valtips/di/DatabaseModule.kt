@@ -7,7 +7,6 @@ import com.hsystudio.valtips.data.local.dao.AbilityDao
 import com.hsystudio.valtips.data.local.dao.ActDao
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.GameModeDao
-import com.hsystudio.valtips.data.local.dao.MapCalloutDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
 import com.hsystudio.valtips.data.local.dao.TierDao
@@ -47,9 +46,6 @@ object DatabaseModule {
 
     @Provides
     fun provideMapDao(db: AppDatabase): MapDao = db.mapDao()
-
-    @Provides
-    fun provideMapCalloutDao(db: AppDatabase): MapCalloutDao = db.mapCalloutDao()
 
     @Provides
     fun provideTierDao(db: AppDatabase): TierDao = db.tierDao()

@@ -6,7 +6,6 @@ import com.hsystudio.valtips.data.local.dao.AbilityDao
 import com.hsystudio.valtips.data.local.dao.ActDao
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.GameModeDao
-import com.hsystudio.valtips.data.local.dao.MapCalloutDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
 import com.hsystudio.valtips.data.local.dao.TierDao
@@ -14,7 +13,6 @@ import com.hsystudio.valtips.data.local.entity.AbilityEntity
 import com.hsystudio.valtips.data.local.entity.ActEntity
 import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.entity.GameModeEntity
-import com.hsystudio.valtips.data.local.entity.MapCalloutEntity
 import com.hsystudio.valtips.data.local.entity.MapEntity
 import com.hsystudio.valtips.data.local.entity.RoleEntity
 import com.hsystudio.valtips.data.local.entity.TierEntity
@@ -25,7 +23,6 @@ import com.hsystudio.valtips.data.local.entity.TierEntity
         AbilityEntity::class,
         RoleEntity::class,
         MapEntity::class,
-        MapCalloutEntity::class,
         TierEntity::class,
         GameModeEntity::class,
         ActEntity::class
@@ -41,8 +38,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun roleDao(): RoleDao
 
     abstract fun mapDao(): MapDao
-
-    abstract fun mapCalloutDao(): MapCalloutDao
 
     abstract fun tierDao(): TierDao
 
