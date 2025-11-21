@@ -2,7 +2,6 @@ package com.hsystudio.valtips.feature.agent.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -80,7 +79,7 @@ fun AgentDetailScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Details",
+                title = "Detail",
                 onNavClick = onBack
             )
         }
@@ -252,9 +251,7 @@ fun AgentDetailScreen(
                                             border = BorderStroke(1.dp, ColorStroke),
                                             colors = CardDefaults.cardColors(containerColor = ColorBlack),
                                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .animateContentSize()
+                                            modifier = Modifier.fillMaxWidth()
                                         ) {
                                             // 설명 카드 컨텐츠
                                             Column(
