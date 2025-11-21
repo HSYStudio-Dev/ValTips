@@ -2,6 +2,8 @@ package com.hsystudio.valtips.di
 
 import com.hsystudio.valtips.domain.repository.AgentRepository
 import com.hsystudio.valtips.domain.repository.AgentRepositoryImpl
+import com.hsystudio.valtips.domain.repository.MapRepository
+import com.hsystudio.valtips.domain.repository.MapRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindAgentRepository(
         impl: AgentRepositoryImpl
     ): AgentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMapRepository(
+        impl: MapRepositoryImpl
+    ): MapRepository
 }

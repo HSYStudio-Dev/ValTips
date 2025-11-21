@@ -1,0 +1,45 @@
+package com.hsystudio.valtips.domain.repository
+
+import com.hsystudio.valtips.data.local.dao.ActDao
+import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.MapDao
+import com.hsystudio.valtips.data.mapper.toDetailUi
+import com.hsystudio.valtips.domain.model.MapListItem
+import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class MapRepositoryImpl @Inject constructor(
+    private val mapDao: MapDao,
+    private val actDao: ActDao,
+    private val agentDao: AgentDao
+) : MapRepository {
+    // 맵 전체에서 리스트 카드에 필요한 정보만 실시간 관찰
+    override fun observeMapCards(): Flow<List<MapListItem>> =
+        mapDao.observeMaps().map { list ->
+            list.map { m ->
+                MapListItem(
+                    uuid = m.uuid,
+                    displayName = m.displayName,
+                    englishName = m.englishName,
+                    listImageLocal = m.listViewIconLocal ?: m.splashLocal,
+                    isActiveInRotation = (m.isActiveInRotation == true)
+                )
+            }
+        }
+
+    // 현재 액트 표시
+    override fun observeCurrentActName(): Flow<String?> =
+        actDao.observeLatest().map { it?.displayName }
+
+    // 맵 상세 정보 실시간 관찰
+    override fun observeMapDetail(mapUuid: String): Flow<MapDetailUi?> =
+        combine(
+            mapDao.observeByUuid(mapUuid),
+            agentDao.observeAll()
+        ) { mapEntity, agents ->
+            mapEntity?.toDetailUi(agents)
+        }
+}

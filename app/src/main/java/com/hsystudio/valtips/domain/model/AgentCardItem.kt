@@ -3,7 +3,7 @@ package com.hsystudio.valtips.domain.model
 // 요원 카드 표시용 도메인 모델
 data class AgentCardItem(
     val uuid: String,
-    val roleUuid: String,
+    val roleUuid: String?,
     val agentIconLocal: String?
 )
 

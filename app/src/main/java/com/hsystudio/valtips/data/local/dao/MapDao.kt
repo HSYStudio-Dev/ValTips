@@ -2,10 +2,8 @@ package com.hsystudio.valtips.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Upsert
 import com.hsystudio.valtips.data.local.entity.MapEntity
-import com.hsystudio.valtips.data.local.relation.MapWithCallouts
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,7 +20,9 @@ interface MapDao {
     @Query("DELETE FROM maps")
     suspend fun clearAll()
 
-    @Transaction
     @Query("SELECT * FROM maps")
-    fun observeMapsWithCallouts(): Flow<List<MapWithCallouts>>
+    fun observeMaps(): Flow<List<MapEntity>>
+
+    @Query("SELECT * FROM maps WHERE uuid = :uuid LIMIT 1")
+    fun observeByUuid(uuid: String): Flow<MapEntity?>
 }

@@ -39,4 +39,8 @@ interface AgentDao {
     @Transaction
     @Query("SELECT * FROM agents")
     fun observeAllWithDetails(): Flow<List<AgentWithDetails>>
+
+    // --- 맵 상세 추천 요원 조회 ---
+    @Query("SELECT * FROM agents")
+    fun observeAll(): Flow<List<AgentEntity>>
 }

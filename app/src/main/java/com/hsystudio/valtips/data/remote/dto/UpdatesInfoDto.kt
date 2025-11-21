@@ -17,5 +17,6 @@ data class UpdateCountsDto(
     val maps: Int,
     val tiers: Int,
     @SerialName("game_modes")
-    val gameModes: Int
+    val gameModes: Int,
+    val acts: Int
 )

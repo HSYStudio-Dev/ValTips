@@ -9,5 +9,6 @@ data class SyncResponse(
     val maps: List<MapDto> = emptyList(),
     val tiers: List<TierDto> = emptyList(),
     @SerialName("game_modes")
-    val gameModes: List<GameModeDto> = emptyList()
+    val gameModes: List<GameModeDto> = emptyList(),
+    val acts: List<CurrentActDto> = emptyList()
 )
