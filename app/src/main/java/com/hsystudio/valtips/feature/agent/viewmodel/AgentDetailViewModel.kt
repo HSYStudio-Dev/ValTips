@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsystudio.valtips.domain.repository.AgentRepository
-import com.hsystudio.valtips.feature.agent.model.AgentDetailUi
+import com.hsystudio.valtips.feature.agent.model.AgentDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +20,7 @@ class AgentDetailViewModel @Inject constructor(
     private val agentUuid: String = checkNotNull(savedStateHandle["agentUuid"])
 
     // 해당 요원의 상세 정보를 관찰하는 상태 플로우
-    val uiStateFlow: StateFlow<AgentDetailUi?> =
+    val uiStateFlow: StateFlow<AgentDetailUiState?> =
         repo.observeAgentDetail(agentUuid)
             .stateIn(
                 scope = viewModelScope,

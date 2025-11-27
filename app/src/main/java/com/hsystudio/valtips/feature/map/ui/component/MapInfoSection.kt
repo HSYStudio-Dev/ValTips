@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import com.hsystudio.valtips.ui.theme.Spoqa
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
@@ -22,7 +22,7 @@ import com.hsystudio.valtips.ui.theme.Valorant
 
 @Composable
 fun MapInfoSection(
-    data: MapDetailUi
+    data: MapDetailUiState
 ) {
     val eng = data.englishName.orEmpty()
     val kor = data.displayName

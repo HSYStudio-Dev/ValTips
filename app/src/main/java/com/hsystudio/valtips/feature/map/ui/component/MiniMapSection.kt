@@ -35,7 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.TextGray
@@ -44,7 +44,7 @@ import com.hsystudio.valtips.util.toCoilModel
 
 @Composable
 fun MiniMapSection(
-    data: MapDetailUi,
+    data: MapDetailUiState,
     isAttackerView: Boolean,
     showSmoke: Boolean,
     onSideChange: (Boolean) -> Unit,

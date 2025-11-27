@@ -1,7 +1,7 @@
 package com.hsystudio.valtips.domain.repository
 
 import com.hsystudio.valtips.domain.model.MapListItem
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import kotlinx.coroutines.flow.Flow
 
 interface MapRepository {
@@ -12,5 +12,5 @@ interface MapRepository {
     fun observeCurrentActName(): Flow<String?>
 
     // 맵 상세 정보 실시간 관찰
-    fun observeMapDetail(mapUuid: String): Flow<MapDetailUi?>
+    fun observeMapDetail(mapUuid: String): Flow<MapDetailUiState?>
 }

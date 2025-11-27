@@ -7,7 +7,7 @@ import com.hsystudio.valtips.data.mapper.toAgentDetailUi
 import com.hsystudio.valtips.data.mapper.toRoleFilterItems
 import com.hsystudio.valtips.domain.model.AgentCardItem
 import com.hsystudio.valtips.domain.model.RoleFilterItem
-import com.hsystudio.valtips.feature.agent.model.AgentDetailUi
+import com.hsystudio.valtips.feature.agent.model.AgentDetailUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class AgentRepositoryImpl @Inject constructor(
         roleDao.getAll().toRoleFilterItems()
 
     // 요원 상세 정보 실시간 관찰
-    override fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUi> =
+    override fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState> =
         agentDao.observeWithDetails(agentUuid).map { rel ->
             requireNotNull(rel) { "Agent not found: $agentUuid" }.toAgentDetailUi()
         }
