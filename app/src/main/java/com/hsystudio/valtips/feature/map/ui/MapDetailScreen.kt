@@ -28,6 +28,7 @@ import com.hsystudio.valtips.feature.map.ui.component.RecommendedAgentsSection
 import com.hsystudio.valtips.feature.map.viewmodel.MapDetailViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
+import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
 fun MapDetailScreen(
@@ -59,7 +60,7 @@ fun MapDetailScreen(
                     .padding(top = values.calculateTopPadding()),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = TextGray)
             }
 
             else -> {
