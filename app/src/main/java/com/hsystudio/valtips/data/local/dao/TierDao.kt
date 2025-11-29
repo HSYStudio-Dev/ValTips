@@ -19,4 +19,10 @@ interface TierDao {
 
     @Query("SELECT * FROM tiers ORDER BY tier ASC")
     fun observeAll(): Flow<List<TierEntity>>
+
+    @Query("SELECT largeIconLocal FROM tiers WHERE tier = 0 LIMIT 1")
+    suspend fun getTierZeroIconLocal(): String?
+
+    @Query("SELECT largeIconLocal FROM tiers WHERE tier = 0 LIMIT 1")
+    fun observeTierZeroIconLocal(): Flow<String?>
 }

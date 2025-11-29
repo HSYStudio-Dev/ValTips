@@ -34,4 +34,10 @@ class AgentRepositoryImpl @Inject constructor(
         agentDao.observeWithDetails(agentUuid).map { rel ->
             requireNotNull(rel) { "Agent not found: $agentUuid" }.toAgentDetailUi()
         }
+
+    // 특정 요원의 카드 정보만 실시간 관찰
+    override fun observeAgentCardItem(agentUuid: String): Flow<AgentCardItem?> =
+        agentDao.observeWithDetails(agentUuid).map { rel ->
+            rel?.toAgentCardItem()
+        }
 }

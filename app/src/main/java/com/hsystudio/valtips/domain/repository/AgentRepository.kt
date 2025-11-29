@@ -14,4 +14,7 @@ interface AgentRepository {
 
     // 요원 상세 정보 실시간 관찰
     fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState>
+
+    // 특정 요원의 카드 정보만 실시간 관찰
+    fun observeAgentCardItem(agentUuid: String): Flow<AgentCardItem?>
 }
