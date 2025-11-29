@@ -9,6 +9,7 @@ object Route {
 
     const val AGENT = "agent"
     const val AGENT_DETAIL = "agent_detail/{agentUuid}"
+    const val MAP_SELECT = "map_select/{agentUuid}"
 
     const val MAP = "map"
     const val MAP_DETAIL = "map_detail/{mapUuid}"
