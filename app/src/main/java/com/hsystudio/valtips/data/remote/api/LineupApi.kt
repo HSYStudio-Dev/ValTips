@@ -1,6 +1,6 @@
 package com.hsystudio.valtips.data.remote.api
 
-import com.hsystudio.valtips.data.remote.dto.MapLineupStatusDto
+import com.hsystudio.valtips.data.remote.dto.LineupStatusDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -9,5 +9,5 @@ interface LineupApi {
     @GET("maps/lineup-status")
     suspend fun getMapLineupStatus(
         @Query("agent_uuid") agentUuid: String
-    ): List<MapLineupStatusDto>
+    ): List<LineupStatusDto>
 }
