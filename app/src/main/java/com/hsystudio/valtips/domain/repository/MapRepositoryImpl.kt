@@ -42,4 +42,10 @@ class MapRepositoryImpl @Inject constructor(
         ) { mapEntity, agents ->
             mapEntity?.toDetailUi(agents)
         }
+
+    // 특정 맵의 스플래시 로컬 경로 실시간 관찰
+    override fun observeMapSplashLocal(mapUuid: String): Flow<String?> =
+        mapDao.observeByUuid(mapUuid).map { entity ->
+            entity?.splashLocal
+        }
 }

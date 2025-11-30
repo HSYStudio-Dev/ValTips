@@ -13,4 +13,7 @@ interface MapRepository {
 
     // 맵 상세 정보 실시간 관찰
     fun observeMapDetail(mapUuid: String): Flow<MapDetailUiState?>
+
+    // 특정 맵의 스플래시 로컬 경로 실시간 관찰
+    fun observeMapSplashLocal(mapUuid: String): Flow<String?>
 }
