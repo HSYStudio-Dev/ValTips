@@ -52,7 +52,7 @@ class AgentSelectViewModel @Inject constructor(
     private val selectedRoleUuidState = MutableStateFlow<String?>(null)
 
     // 라인업 상태 / 로딩 / 에러
-    private val lineupStatusState = MutableStateFlow<List<LineupStatus>>(emptyList())
+    private val lineupStatusFlow = MutableStateFlow<List<LineupStatus>>(emptyList())
     private val isLoadingState = MutableStateFlow(true)
     private val errorState = MutableStateFlow<String?>(null)
 
@@ -82,7 +82,7 @@ class AgentSelectViewModel @Inject constructor(
 
     // 라인업 상태 + 맵 스플래시 + 플레이스홀더 아이콘을 합친 Flow
     private val rightCoreFlow = combine(
-        lineupStatusState,
+        lineupStatusFlow,
         mapSplashFlow,
         placeholderIconFlow
     ) { lineupStatus, mapSplashLocal, placeholderIconLocal ->
@@ -145,11 +145,11 @@ class AgentSelectViewModel @Inject constructor(
             lineupRepository
                 .getAgentsLineupStatus(mapUuid)
                 .onSuccess { list ->
-                    lineupStatusState.value = list
+                    lineupStatusFlow.value = list
                 }
                 .onFailure { e ->
                     Log.e("AgentSelectViewModel", "맵 기준 라인업 조회 실패 : ${e.message}")
-                    errorState.value = e.message ?: "라인업 정보를 불러오지 못했습니다."
+                    errorState.value = "라인업 정보를 불러오지 못했습니다."
                 }
             isLoadingState.value = false
         }

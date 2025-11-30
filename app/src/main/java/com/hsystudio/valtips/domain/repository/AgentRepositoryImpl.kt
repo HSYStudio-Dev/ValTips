@@ -31,13 +31,13 @@ class AgentRepositoryImpl @Inject constructor(
 
     // 요원 상세 정보 실시간 관찰
     override fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState> =
-        agentDao.observeWithDetails(agentUuid).map { rel ->
-            requireNotNull(rel) { "Agent not found: $agentUuid" }.toAgentDetailUi()
+        agentDao.observeWithDetails(agentUuid).map { entity ->
+            requireNotNull(entity) { "Agent not found: $agentUuid" }.toAgentDetailUi()
         }
 
     // 특정 요원의 카드 정보만 실시간 관찰
-    override fun observeAgentCardItem(agentUuid: String): Flow<AgentCardItem?> =
-        agentDao.observeWithDetails(agentUuid).map { rel ->
-            rel?.toAgentCardItem()
+    override fun observeAgentIconLocal(agentUuid: String): Flow<String?> =
+        agentDao.observeWithDetails(agentUuid).map { entity ->
+            entity?.agent?.displayIconLocal
         }
 }

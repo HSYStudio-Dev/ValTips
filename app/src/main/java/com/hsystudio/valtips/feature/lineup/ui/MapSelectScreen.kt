@@ -33,7 +33,7 @@ import com.hsystudio.valtips.ui.component.bar.AppTopBar
 import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
-fun MapSelectRoute(
+fun MapSelectScreen(
     onBack: () -> Unit,
     onMapClick: (String) -> Unit,
     viewModel: MapSelectViewModel = hiltViewModel()
@@ -76,7 +76,7 @@ fun MapSelectRoute(
 
                 // 헤더 카드
                 LineupHeaderCard(
-                    agentIcon = uiState.selectedAgent?.agentIconLocal,
+                    agentIcon = uiState.agentIconLocal,
                     mapSplash = null,
                     placeholderIcon = uiState.placeholderIconLocal,
                     boxHeight = boxHeight
