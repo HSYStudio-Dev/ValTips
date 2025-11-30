@@ -8,7 +8,7 @@ import com.hsystudio.valtips.data.local.dao.TierDao
 import com.hsystudio.valtips.domain.repository.AgentRepository
 import com.hsystudio.valtips.domain.repository.LineupRepository
 import com.hsystudio.valtips.domain.repository.MapRepository
-import com.hsystudio.valtips.feature.lineup.model.MapLineupStatus
+import com.hsystudio.valtips.feature.lineup.model.LineupStatus
 import com.hsystudio.valtips.feature.lineup.model.MapSelectUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,7 @@ class MapSelectViewModel @Inject constructor(
     private val agentUuid: String = checkNotNull(savedStateHandle["agentUuid"])
 
     // 라인업 상태 / 로딩 / 에러
-    private val lineupStatusFlow = MutableStateFlow<List<MapLineupStatus>>(emptyList())
+    private val lineupStatusFlow = MutableStateFlow<List<LineupStatus>>(emptyList())
     private val isLoading = MutableStateFlow(true)
     private val error = MutableStateFlow<String?>(null)
 

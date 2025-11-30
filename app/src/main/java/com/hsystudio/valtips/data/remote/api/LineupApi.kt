@@ -10,4 +10,10 @@ interface LineupApi {
     suspend fun getMapLineupStatus(
         @Query("agent_uuid") agentUuid: String
     ): List<LineupStatusDto>
+
+    // 맵 기준 요원별 라인업 가능 상태 조회
+    @GET("agents/lineup-status")
+    suspend fun getAgentLineupStatus(
+        @Query("map_uuid") mapUuid: String
+    ): List<LineupStatusDto>
 }

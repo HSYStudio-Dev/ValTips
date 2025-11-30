@@ -14,9 +14,3 @@ data class MapSelectUiState(
     val isLoading: Boolean = true,
     val error: String? = null
 )
-
-// 맵 라인업 보유 여부 상태 모델
-data class MapLineupStatus(
-    val uuid: String,
-    val hasLineups: Boolean
-)
