@@ -33,8 +33,16 @@ fun LineupHeaderCard(
     boxHeight: Int
 ) {
     val cardHeight = boxHeight + (16 * 2)
+    val isPlaceholderMap = mapSplash == null && placeholderIcon != null
+
     val mapModel = remember(mapSplash, placeholderIcon) {
         toCoilModel(mapSplash ?: placeholderIcon)
+    }
+
+    val mapContentScale = if (isPlaceholderMap) {
+        ContentScale.FillHeight
+    } else {
+        ContentScale.Crop
     }
 
     Card(
@@ -75,12 +83,14 @@ fun LineupHeaderCard(
                     .height(boxHeight.dp)
                     .background(Color(0xFF77858F).copy(0.5f))
             ) {
-                AsyncImage(
-                    model = mapModel,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillHeight
-                )
+                if (mapModel != null) {
+                    AsyncImage(
+                        model = mapModel,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = mapContentScale
+                    )
+                }
             }
         }
     }
