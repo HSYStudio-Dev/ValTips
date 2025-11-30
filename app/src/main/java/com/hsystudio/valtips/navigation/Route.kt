@@ -13,6 +13,7 @@ object Route {
 
     const val MAP = "map"
     const val MAP_DETAIL = "map_detail/{mapUuid}"
+    const val AGENT_SELECT = "agent_select/{mapUuid}"
 
     const val SETTING = "setting"
 }

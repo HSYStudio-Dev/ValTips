@@ -16,7 +16,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.hsystudio.valtips.feature.agent.ui.AgentDetailScreen
 import com.hsystudio.valtips.feature.agent.ui.AgentsScreen
-import com.hsystudio.valtips.feature.lineup.ui.MapSelectRoute
+import com.hsystudio.valtips.feature.lineup.ui.AgentSelectScreen
+import com.hsystudio.valtips.feature.lineup.ui.MapSelectScreen
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
 import com.hsystudio.valtips.feature.login.ui.SplashScreen
@@ -156,7 +157,7 @@ fun AppNavGraph(
                 route = Route.MAP_SELECT,
                 arguments = listOf(navArgument("agentUuid") { type = NavType.StringType })
             ) {
-                MapSelectRoute(
+                MapSelectScreen(
                     onBack = { navController.popBackStack() },
                     onMapClick = {
                     }
@@ -178,7 +179,20 @@ fun AppNavGraph(
             ) {
                 MapDetailScreen(
                     onBack = { navController.popBackStack() },
-                    onGuideClick = {}
+                    onGuideClick = { mapUuid ->
+                        navController.navigate("agent_select/$mapUuid")
+                    }
+                )
+            }
+            /**Agent Select(요원 선택 */
+            composable(
+                route = Route.AGENT_SELECT,
+                arguments = listOf(navArgument("mapUuid") { type = NavType.StringType })
+            ) {
+                AgentSelectScreen(
+                    onBack = { navController.popBackStack() },
+                    onAgentClick = {
+                    }
                 )
             }
 
