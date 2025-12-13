@@ -15,7 +15,7 @@ private fun slotOrder(slot: String) = when (slot.lowercase()) {
 }
 
 // 스킬 슬롯 라벨 지정
-private fun slotLabel(slot: String) = when (slot.lowercase()) {
+fun slotLabel(slot: String) = when (slot.lowercase()) {
     "ability1" -> "C"
     "ability2" -> "Q"
     "grenade"  -> "E"

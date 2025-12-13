@@ -43,4 +43,9 @@ interface AgentDao {
     // --- 맵 상세 추천 요원 조회 ---
     @Query("SELECT * FROM agents")
     fun observeAll(): Flow<List<AgentEntity>>
+
+    // 여러 agentUuid에 대해 details를 한 번에 조회
+    @Transaction
+    @Query("SELECT * FROM agents WHERE uuid IN (:uuids)")
+    suspend fun getWithDetailsByUuids(uuids: List<String>): List<AgentWithDetails>
 }
