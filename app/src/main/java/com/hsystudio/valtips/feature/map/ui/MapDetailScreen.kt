@@ -87,19 +87,23 @@ fun MapDetailScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(scroll)
-                            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
+                            .padding(horizontal = horizontalPadding)
+                            .padding(bottom = verticalPadding),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.Top
                     ) {
+                        Spacer(Modifier.height(16.dp))
                         // 맵 이름 + 사이트 설명
                         MapInfoSection(data)
 
+                        Spacer(Modifier.height(16.dp))
                         // 추천 요원
                         RecommendedAgentsSection(
                             agents = data.recommendedAgents,
                             size = agentCardSize
                         )
 
+                        Spacer(Modifier.height(16.dp))
                         // 미니맵 + 토글
                         MiniMapSection(
                             data = data,
@@ -109,8 +113,7 @@ fun MapDetailScreen(
                             onSmokeChange = { showSmoke = it }
                         )
 
-                        Spacer(Modifier.height(8.dp))
-
+                        Spacer(Modifier.height(16.dp))
                         // 요원별 스킬 가이드 버튼
                         BorderButton(
                             text = "요원별 스킬 가이드",
