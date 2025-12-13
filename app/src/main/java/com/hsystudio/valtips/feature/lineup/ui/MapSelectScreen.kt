@@ -35,10 +35,11 @@ import com.hsystudio.valtips.ui.theme.TextGray
 @Composable
 fun MapSelectScreen(
     onBack: () -> Unit,
-    onMapClick: (String) -> Unit,
+    onMapClick: (agentUuid: String, mapUuid: String) -> Unit,
     viewModel: MapSelectViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val agentUuid = viewModel.agentUuid
 
     Scaffold(
         topBar = {
@@ -178,7 +179,9 @@ fun MapSelectScreen(
                                             item = map,
                                             active = hasLineups,
                                             enabled = hasLineups,
-                                            onClick = onMapClick
+                                            onClick = { mapUuid ->
+                                                onMapClick(agentUuid, mapUuid)
+                                            }
                                         )
                                     }
 
@@ -203,7 +206,9 @@ fun MapSelectScreen(
                                                 item = map,
                                                 active = hasLineups,
                                                 enabled = hasLineups,
-                                                onClick = onMapClick
+                                                onClick = { mapUuid ->
+                                                    onMapClick(agentUuid, mapUuid)
+                                                }
                                             )
                                         }
                                     }

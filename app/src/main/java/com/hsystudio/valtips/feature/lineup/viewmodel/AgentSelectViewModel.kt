@@ -45,7 +45,7 @@ class AgentSelectViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     // NavGraph에서 전달된 맵 UUID
-    private val mapUuid: String = checkNotNull(savedStateHandle["mapUuid"])
+    val mapUuid: String = checkNotNull(savedStateHandle["mapUuid"])
 
     // 역할 필터 상태
     private val rolesState = MutableStateFlow<List<RoleFilterItem>>(emptyList())

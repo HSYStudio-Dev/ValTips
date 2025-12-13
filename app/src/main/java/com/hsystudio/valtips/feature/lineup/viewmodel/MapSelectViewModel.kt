@@ -27,7 +27,7 @@ class MapSelectViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     // NavGraph에서 전달된 요원 UUID
-    private val agentUuid: String = checkNotNull(savedStateHandle["agentUuid"])
+    val agentUuid: String = checkNotNull(savedStateHandle["agentUuid"])
 
     // 라인업 상태 / 로딩 / 에러
     private val lineupStatusFlow = MutableStateFlow<List<LineupStatus>>(emptyList())

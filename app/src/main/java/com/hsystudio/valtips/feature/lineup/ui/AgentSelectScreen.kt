@@ -37,10 +37,11 @@ import com.hsystudio.valtips.ui.theme.TextGray
 @Composable
 fun AgentSelectScreen(
     onBack: () -> Unit,
-    onAgentClick: (String) -> Unit,
+    onAgentClick: (agentUuid: String, mapUuid: String) -> Unit,
     viewModel: AgentSelectViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val mapUuid = viewModel.mapUuid
 
     Scaffold(
         topBar = {
@@ -181,7 +182,9 @@ fun AgentSelectScreen(
                                         val hasLineups = uiState.lineupStatus[agent.uuid] ?: false
                                         AgentCard(
                                             agent = agent,
-                                            onClick = onAgentClick,
+                                            onClick = {
+                                                onAgentClick(agent.uuid, mapUuid)
+                                            },
                                             enabled = hasLineups
                                         )
                                     }

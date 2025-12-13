@@ -17,6 +17,7 @@ import androidx.navigation.navigation
 import com.hsystudio.valtips.feature.agent.ui.AgentDetailScreen
 import com.hsystudio.valtips.feature.agent.ui.AgentsScreen
 import com.hsystudio.valtips.feature.lineup.ui.AgentSelectScreen
+import com.hsystudio.valtips.feature.lineup.ui.LineupsScreen
 import com.hsystudio.valtips.feature.lineup.ui.MapSelectScreen
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
 import com.hsystudio.valtips.feature.login.ui.OnboardingScreen
@@ -159,7 +160,8 @@ fun AppNavGraph(
             ) {
                 MapSelectScreen(
                     onBack = { navController.popBackStack() },
-                    onMapClick = {
+                    onMapClick = { agentUuid, mapUuid ->
+                        navController.navigate("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
                     }
                 )
             }
@@ -184,14 +186,30 @@ fun AppNavGraph(
                     }
                 )
             }
-            /**Agent Select(요원 선택 */
+            /** Agent Select(요원 선택) */
             composable(
                 route = Route.AGENT_SELECT,
                 arguments = listOf(navArgument("mapUuid") { type = NavType.StringType })
             ) {
                 AgentSelectScreen(
                     onBack = { navController.popBackStack() },
-                    onAgentClick = {
+                    onAgentClick = { agentUuid, mapUuid ->
+                        navController.navigate("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
+                    }
+                )
+            }
+
+            /** Lineups(라인업 리스트) */
+            composable(
+                route = Route.LINEUP,
+                arguments = listOf(
+                    navArgument("agentUuid") { type = NavType.StringType },
+                    navArgument("mapUuid") { type = NavType.StringType }
+                )
+            ) {
+                LineupsScreen(
+                    onBack = { navController.popBackStack() },
+                    onLineupClick = {
                     }
                 )
             }
