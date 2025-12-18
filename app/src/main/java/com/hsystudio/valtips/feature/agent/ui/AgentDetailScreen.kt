@@ -91,7 +91,7 @@ fun AgentDetailScreen(
                     .padding(top = values.calculateTopPadding()),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = TextGray)
             }
 
             else -> {

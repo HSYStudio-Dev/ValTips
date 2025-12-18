@@ -5,7 +5,7 @@ import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.MapDao
 import com.hsystudio.valtips.data.mapper.toDetailUi
 import com.hsystudio.valtips.domain.model.MapListItem
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -35,11 +35,17 @@ class MapRepositoryImpl @Inject constructor(
         actDao.observeLatest().map { it?.displayName }
 
     // 맵 상세 정보 실시간 관찰
-    override fun observeMapDetail(mapUuid: String): Flow<MapDetailUi?> =
+    override fun observeMapDetail(mapUuid: String): Flow<MapDetailUiState?> =
         combine(
             mapDao.observeByUuid(mapUuid),
             agentDao.observeAll()
         ) { mapEntity, agents ->
             mapEntity?.toDetailUi(agents)
+        }
+
+    // 특정 맵의 스플래시 로컬 경로 실시간 관찰
+    override fun observeMapSplashLocal(mapUuid: String): Flow<String?> =
+        mapDao.observeByUuid(mapUuid).map { entity ->
+            entity?.splashLocal
         }
 }

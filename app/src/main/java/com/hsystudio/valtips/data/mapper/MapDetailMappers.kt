@@ -2,13 +2,13 @@ package com.hsystudio.valtips.data.mapper
 
 import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.entity.MapEntity
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import com.hsystudio.valtips.feature.map.model.MapRecommendedAgentItem
 
 // MapEntity + AgentEntity → UI 표시용 모델로 변환
 fun MapEntity.toDetailUi(
     agents: List<AgentEntity>
-): MapDetailUi {
+): MapDetailUiState {
     // 추천 요원 uuid 리스트 변환
     val recommendedIds = listOfNotNull(
         recommendedAgent1Id,
@@ -29,7 +29,7 @@ fun MapEntity.toDetailUi(
             )
         }
 
-    return MapDetailUi(
+    return MapDetailUiState(
         uuid = uuid,
         displayName = displayName,
         englishName = englishName,

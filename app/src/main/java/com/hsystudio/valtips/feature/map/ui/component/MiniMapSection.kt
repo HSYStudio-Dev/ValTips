@@ -1,6 +1,5 @@
 package com.hsystudio.valtips.feature.map.ui.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -13,12 +12,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -29,13 +26,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.hsystudio.valtips.feature.map.model.MapDetailUi
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
+import com.hsystudio.valtips.ui.component.SegmentItem
+import com.hsystudio.valtips.ui.component.SegmentedControl
 import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.TextGray
@@ -44,7 +42,7 @@ import com.hsystudio.valtips.util.toCoilModel
 
 @Composable
 fun MiniMapSection(
-    data: MapDetailUi,
+    data: MapDetailUiState,
     isAttackerView: Boolean,
     showSmoke: Boolean,
     onSideChange: (Boolean) -> Unit,
@@ -185,89 +183,50 @@ fun MiniMapSection(
                 }
             }
         }
-        // 공격/수비 토글 + 연막 스위치
+        // 공격/수비 토글
+        SegmentedControl(
+            items = listOf(
+                SegmentItem(
+                    value = true,
+                    label = "공격",
+                    gradientSpec = { dark, mint -> Triple(mint, null, dark) }
+                ),
+                SegmentItem(
+                    value = false,
+                    label = "수비",
+                    gradientSpec = { dark, mint -> Triple(dark, null, mint) }
+                )
+            ),
+            selected = isAttackerView,
+            onSelected = { selected ->
+                onSideChange(selected)
+            },
+            height = 44.dp,
+            outerRadius = 16.dp,
+            innerRadius = 12.dp
+        )
+        // 연막 스위치
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
         ) {
-            // 공격/수비 토글
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FilterToggleChip(
-                    text = "공격",
-                    selected = isAttackerView,
-                    onClick = { onSideChange(true) }
-                )
-                FilterToggleChip(
-                    text = "수비",
-                    selected = !isAttackerView,
-                    enabled = data.hasDefenderView || !data.hasAttackerView,
-                    onClick = { onSideChange(false) }
-                )
-            }
-            // 연막 스위치
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = "추천 연막 보기",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (smokeAvailable) TextWhite else TextGray
-                )
-                Switch(
-                    checked = showSmoke && smokeAvailable,
-                    enabled = smokeAvailable,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = ColorMint,
-                        checkedBorderColor = ColorMint
-                    ),
-                    onCheckedChange = {
-                        if (smokeAvailable) onSmokeChange(!showSmoke)
-                    }
-                )
-            }
+            Text(
+                text = "추천 연막 보기",
+                style = MaterialTheme.typography.bodySmall,
+                color = if (smokeAvailable) TextWhite else TextGray
+            )
+            Switch(
+                checked = showSmoke && smokeAvailable,
+                enabled = smokeAvailable,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = ColorMint,
+                    checkedBorderColor = ColorMint
+                ),
+                onCheckedChange = {
+                    if (smokeAvailable) onSmokeChange(!showSmoke)
+                }
+            )
         }
-    }
-}
-
-@Composable
-private fun FilterToggleChip(
-    text: String,
-    selected: Boolean,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val bg = when {
-        !enabled -> ColorBlack
-        selected -> ColorMint
-        else -> Color.Transparent
-    }
-    val borderColor = when {
-        !enabled -> TextGray
-        selected -> ColorMint
-        else -> TextGray
-    }
-    val textColor = when {
-        !enabled -> TextGray
-        selected -> ColorBlack
-        else -> TextWhite
-    }
-
-    Surface(
-        onClick = onClick,
-        enabled = enabled,
-        shape = RoundedCornerShape(12.dp),
-        color = bg,
-        border = BorderStroke(1.dp, borderColor),
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = textColor
-        )
     }
 }

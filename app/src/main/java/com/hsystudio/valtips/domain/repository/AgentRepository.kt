@@ -2,7 +2,7 @@ package com.hsystudio.valtips.domain.repository
 
 import com.hsystudio.valtips.domain.model.AgentCardItem
 import com.hsystudio.valtips.domain.model.RoleFilterItem
-import com.hsystudio.valtips.feature.agent.model.AgentDetailUi
+import com.hsystudio.valtips.feature.agent.model.AgentDetailUiState
 import kotlinx.coroutines.flow.Flow
 
 interface AgentRepository {
@@ -13,5 +13,8 @@ interface AgentRepository {
     suspend fun getRoleFilters(): List<RoleFilterItem>
 
     // 요원 상세 정보 실시간 관찰
-    fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUi>
+    fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState>
+
+    // 특정 요원의 카드 정보만 실시간 관찰
+    fun observeAgentIconLocal(agentUuid: String): Flow<String?>
 }

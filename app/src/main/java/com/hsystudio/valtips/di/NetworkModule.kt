@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.di
 
 import com.hsystudio.valtips.BuildConfig
+import com.hsystudio.valtips.data.remote.api.LineupApi
 import com.hsystudio.valtips.data.remote.api.ResourceApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -78,4 +79,9 @@ object NetworkModule {
     @Singleton
     fun provideResourceApi(retrofit: Retrofit): ResourceApi =
         retrofit.create(ResourceApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLineupApi(retrofit: Retrofit): LineupApi =
+        retrofit.create(LineupApi::class.java)
 }

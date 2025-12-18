@@ -1,7 +1,7 @@
 package com.hsystudio.valtips.feature.map.model
 
-// 맵 상세 화면에서 사용할 데이터 구조
-data class MapDetailUi(
+// 맵 상세 화면 UI 상태
+data class MapDetailUiState(
     val uuid: String,
     val displayName: String,
     val englishName: String?,
