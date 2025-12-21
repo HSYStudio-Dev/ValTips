@@ -43,7 +43,7 @@ import com.hsystudio.valtips.ui.theme.TextGray
 @Composable
 fun LineupsScreen(
     onBack: () -> Unit,
-    onLineupClick: (Int) -> Unit,
+    onLineupClick: (lineupId: Int) -> Unit,
     viewModel: LineupsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
@@ -226,6 +226,7 @@ fun LineupsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(1f),
+                                contentPadding = PaddingValues(bottom = verticalPadding),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 if (attackList.isNotEmpty()) {

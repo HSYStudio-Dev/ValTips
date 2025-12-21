@@ -209,7 +209,8 @@ fun AppNavGraph(
             ) {
                 LineupsScreen(
                     onBack = { navController.popBackStack() },
-                    onLineupClick = {
+                    onLineupClick = { lineupId ->
+                        navController.navigate("lineup_detail/$lineupId")
                     }
                 )
             }

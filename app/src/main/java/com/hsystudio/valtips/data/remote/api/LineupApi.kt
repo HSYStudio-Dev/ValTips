@@ -23,7 +23,7 @@ interface LineupApi {
     suspend fun getLineups(
         @Query("agent_uuid") agentUuid: String,
         @Query("map_uuid") mapUuid: String
-    ): LineupListResponseDto
+    ): LineupListDto
 
     // 타임스탬프 이후 추가된 라인업 리스트 조회
     @GET("lineups/updates")
