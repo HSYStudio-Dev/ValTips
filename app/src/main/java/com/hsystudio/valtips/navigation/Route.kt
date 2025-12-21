@@ -16,6 +16,7 @@ object Route {
     const val AGENT_SELECT = "agent_select/{mapUuid}"
 
     const val LINEUP = "lineup/agentUuid={agentUuid}&mapUuid={mapUuid}"
+    const val LINEUP_DETAIL = "lineup_detail/{lineupId}"
 
     const val SETTING = "setting"
 }
