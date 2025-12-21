@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.domain.repository
 
 import com.hsystudio.valtips.feature.lineup.model.LineupCardItem
+import com.hsystudio.valtips.feature.lineup.model.LineupDetailItem
 import com.hsystudio.valtips.feature.lineup.model.LineupStatus
 
 interface LineupRepository {
@@ -12,4 +13,7 @@ interface LineupRepository {
 
     // 요원 + 맵 조합에 대한 라인업 리스트 조회
     suspend fun getLineups(agentUuid: String, mapUuid: String): Result<List<LineupCardItem>>
+
+    // 라인업 상세 정보 조회
+    suspend fun getLineupDetail(lineupId: Int): Result<LineupDetailItem>
 }
