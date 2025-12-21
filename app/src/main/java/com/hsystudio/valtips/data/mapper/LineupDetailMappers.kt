@@ -1,5 +1,6 @@
 package com.hsystudio.valtips.data.mapper
 
+import android.util.Log
 import com.hsystudio.valtips.data.remote.dto.LineupDetailDto
 import com.hsystudio.valtips.data.remote.dto.LineupStepDto
 import com.hsystudio.valtips.feature.lineup.model.LineupDetailItem
@@ -40,6 +41,7 @@ private fun String.toKoreanDate(
         )
         kstTime.format(DateTimeFormatter.ofPattern(pattern))
     } catch (e: Exception) {
+        Log.e("LineupDetailMappers", "날짜 포멧팅 오류: $this")
         this
     }
 
