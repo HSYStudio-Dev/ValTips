@@ -17,6 +17,7 @@ import androidx.navigation.navigation
 import com.hsystudio.valtips.feature.agent.ui.AgentDetailScreen
 import com.hsystudio.valtips.feature.agent.ui.AgentsScreen
 import com.hsystudio.valtips.feature.lineup.ui.AgentSelectScreen
+import com.hsystudio.valtips.feature.lineup.ui.LineupDetailScreen
 import com.hsystudio.valtips.feature.lineup.ui.LineupsScreen
 import com.hsystudio.valtips.feature.lineup.ui.MapSelectScreen
 import com.hsystudio.valtips.feature.login.ui.LoginScreen
@@ -209,8 +210,20 @@ fun AppNavGraph(
             ) {
                 LineupsScreen(
                     onBack = { navController.popBackStack() },
-                    onLineupClick = {
+                    onLineupClick = { lineupId ->
+                        navController.navigate("lineup_detail/$lineupId")
                     }
+                )
+            }
+            /** Lineup Detail(라인업 상세) */
+            composable(
+                route = Route.LINEUP_DETAIL,
+                arguments = listOf(
+                    navArgument("lineupId") { type = NavType.IntType }
+                )
+            ) {
+                LineupDetailScreen(
+                    onBack = { navController.popBackStack() }
                 )
             }
 

@@ -3,9 +3,11 @@ package com.hsystudio.valtips.domain.repository
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.mapper.toBase
 import com.hsystudio.valtips.data.mapper.toDomain
+import com.hsystudio.valtips.data.mapper.toUi
 import com.hsystudio.valtips.data.remote.api.LineupApi
 import com.hsystudio.valtips.feature.lineup.model.LineupCardBase
 import com.hsystudio.valtips.feature.lineup.model.LineupCardItem
+import com.hsystudio.valtips.feature.lineup.model.LineupDetailItem
 import com.hsystudio.valtips.feature.lineup.model.LineupStatus
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -210,4 +212,13 @@ class LineupRepositoryImpl @Inject constructor(
         }
         return cached + agentAssetsCache.filterKeys { it in agentUuids }
     }
+
+    // ─────────────────────────────────────────────
+    // 라인업 상세 정보 조회
+    // ─────────────────────────────────────────────
+
+    override suspend fun getLineupDetail(lineupId: Int): Result<LineupDetailItem> =
+        runCatching {
+            api.getLineupDetail(lineupId).toUi()
+        }
 }

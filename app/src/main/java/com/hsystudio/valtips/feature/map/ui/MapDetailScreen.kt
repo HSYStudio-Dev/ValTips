@@ -48,7 +48,7 @@ fun MapDetailScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Detail",
+                title = "Details",
                 onNavClick = onBack
             )
         }

@@ -17,9 +17,6 @@ complexity:
   ComplexCondition:
     active: true # 조건식(if/when) 안의 연산자 개수 제한
     threshold: 5 # 조건식에 논리 연산(AND/OR)이 5개 이상이면 경고
-  ComplexMethod:
-    active: true # 함수 복잡도 제한
-    threshold: 40 # 복잡도가 40 이상이면 경고
   CyclomaticComplexMethod:
     active: true # 함수 복잡도 제한(최신)
     threshold: 40 # 복잡도가 40 이상이면 경고

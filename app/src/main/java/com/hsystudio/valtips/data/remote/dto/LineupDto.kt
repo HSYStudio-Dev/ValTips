@@ -17,7 +17,7 @@ data class LineupDto(
 )
 
 @Serializable
-data class LineupListResponseDto(
+data class LineupListDto(
     @SerialName("latest_timestamp")
     val latestTimestamp: String,
     val data: List<LineupDto>
