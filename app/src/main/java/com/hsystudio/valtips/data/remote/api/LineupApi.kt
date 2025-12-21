@@ -1,8 +1,10 @@
 package com.hsystudio.valtips.data.remote.api
 
-import com.hsystudio.valtips.data.remote.dto.LineupListResponseDto
+import com.hsystudio.valtips.data.remote.dto.LineupDetailDto
+import com.hsystudio.valtips.data.remote.dto.LineupListDto
 import com.hsystudio.valtips.data.remote.dto.LineupStatusDto
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface LineupApi {
@@ -31,5 +33,11 @@ interface LineupApi {
         @Query("agent_uuid") agentUuid: String,
         @Query("map_uuid") mapUuid: String,
         @Query("since") since: String
-    ): LineupListResponseDto
+    ): LineupListDto
+
+    // 라인업 상세 조회
+    @GET("/lineups/{lineup_id}")
+    suspend fun getLineupDetail(
+        @Path("lineup_id") lineupId: Int
+    ): LineupDetailDto
 }
