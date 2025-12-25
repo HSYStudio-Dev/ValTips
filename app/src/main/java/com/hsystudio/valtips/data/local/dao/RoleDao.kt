@@ -4,18 +4,19 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.hsystudio.valtips.data.local.entity.RoleEntity
+import com.hsystudio.valtips.domain.model.RoleFilterItem
 
 @Dao
 interface RoleDao {
+    // 초기 리소스 저장
     @Upsert
     suspend fun upsert(items: List<RoleEntity>)
 
-    @Query("SELECT * FROM roles")
-    suspend fun getAll(): List<RoleEntity>
-
-    @Query("DELETE FROM roles WHERE uuid IN (:uuids)")
-    suspend fun deleteByUuids(uuids: List<String>)
-
+    // 초기 리소스 초기화
     @Query("DELETE FROM roles")
     suspend fun clearAll()
+
+    // 요원 화면 & 요원 선택 화면 - 역할 필터
+    @Query("SELECT uuid, displayIconLocal AS roleIconLocal FROM roles")
+    suspend fun getRoleFilters(): List<RoleFilterItem>
 }

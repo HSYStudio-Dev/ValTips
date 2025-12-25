@@ -2,9 +2,8 @@ package com.hsystudio.valtips.domain.repository
 
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.local.dao.RoleDao
-import com.hsystudio.valtips.data.mapper.toAgentCardItem
 import com.hsystudio.valtips.data.mapper.toAgentDetailUi
-import com.hsystudio.valtips.data.mapper.toRoleFilterItems
+import com.hsystudio.valtips.data.mapper.organize
 import com.hsystudio.valtips.domain.model.AgentCardItem
 import com.hsystudio.valtips.domain.model.RoleFilterItem
 import com.hsystudio.valtips.feature.agent.model.AgentDetailUiState
@@ -18,16 +17,15 @@ class AgentRepositoryImpl @Inject constructor(
 ) : AgentRepository {
     // 역할별 요원 목록 실시간 관찰
     override fun observeAgents(roleUuid: String?): Flow<List<AgentCardItem>> =
-        agentDao.observeAllWithDetails().map { list ->
-            list.asSequence()
-                .filter { roleUuid == null || it.role.uuid == roleUuid }
-                .map { it.toAgentCardItem() }
-                .toList()
+        if (roleUuid.isNullOrEmpty()) {
+            agentDao.observeAllCards()
+        } else {
+            agentDao.observeCardsByRole(roleUuid)
         }
 
     // 역할 필터 목록 조회
     override suspend fun getRoleFilters(): List<RoleFilterItem> =
-        roleDao.getAll().toRoleFilterItems()
+        roleDao.getRoleFilters().organize()
 
     // 요원 상세 정보 실시간 관찰
     override fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState> =
