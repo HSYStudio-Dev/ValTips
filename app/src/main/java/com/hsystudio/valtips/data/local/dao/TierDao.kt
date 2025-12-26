@@ -8,21 +8,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TierDao {
+    // 초기 리소스 저장
     @Upsert
     suspend fun upsert(items: List<TierEntity>)
 
-    @Query("SELECT * FROM tiers ORDER BY tier ASC")
-    suspend fun getAll(): List<TierEntity>
-
+    // 초기 리소스 초기화
     @Query("DELETE FROM tiers")
     suspend fun clearAll()
 
-    @Query("SELECT * FROM tiers ORDER BY tier ASC")
-    fun observeAll(): Flow<List<TierEntity>>
-
-    @Query("SELECT largeIconLocal FROM tiers WHERE tier = 0 LIMIT 1")
-    suspend fun getTierZeroIconLocal(): String?
-
+    // 요원&맵 선택 / 라인업 화면 - 언랭크 이미지 조회
     @Query("SELECT largeIconLocal FROM tiers WHERE tier = 0 LIMIT 1")
     fun observeTierZeroIconLocal(): Flow<String?>
 }

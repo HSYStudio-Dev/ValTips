@@ -7,18 +7,11 @@ import com.hsystudio.valtips.data.local.entity.AbilityEntity
 
 @Dao
 interface AbilityDao {
+    // 초기 리소스 저장
     @Upsert
     suspend fun upsert(items: List<AbilityEntity>)
 
-    @Query("SELECT * FROM abilities WHERE agentUuid = :agentUuid")
-    suspend fun getByAgent(agentUuid: String): List<AbilityEntity>
-
-    @Query("DELETE FROM abilities WHERE id IN (:ids)")
-    suspend fun deleteByIds(ids: List<Int>)
-
-    @Query("DELETE FROM abilities WHERE agentUuid IN (:agentUuids)")
-    suspend fun deleteByAgentUuids(agentUuids: List<String>)
-
+    // 초기 리소스 초기화
     @Query("DELETE FROM abilities")
     suspend fun clearAll()
 }

@@ -29,6 +29,7 @@ import com.hsystudio.valtips.feature.map.ui.MapsScreen
 import com.hsystudio.valtips.feature.stats.ui.StatsScreen
 import com.hsystudio.valtips.ui.component.bar.AppBottomBar
 import com.hsystudio.valtips.ui.component.bar.BottomNavItems
+import com.hsystudio.valtips.util.navigateSafe
 
 @Composable
 fun AppNavGraph(
@@ -138,7 +139,7 @@ fun AppNavGraph(
             composable(Route.AGENT) {
                 AgentsScreen(
                     onAgentClick = { agentUuid ->
-                        navController.navigate("agent_detail/$agentUuid")
+                        navController.navigateSafe("agent_detail/$agentUuid")
                     }
                 )
             }
@@ -150,7 +151,7 @@ fun AppNavGraph(
                 AgentDetailScreen(
                     onBack = { navController.popBackStack() },
                     onGuideClick = { agentUuid ->
-                        navController.navigate("map_select/$agentUuid")
+                        navController.navigateSafe("map_select/$agentUuid")
                     }
                 )
             }
@@ -162,7 +163,7 @@ fun AppNavGraph(
                 MapSelectScreen(
                     onBack = { navController.popBackStack() },
                     onMapClick = { agentUuid, mapUuid ->
-                        navController.navigate("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
+                        navController.navigateSafe("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
                     }
                 )
             }
@@ -171,7 +172,7 @@ fun AppNavGraph(
             composable(Route.MAP) {
                 MapsScreen(
                     onMapClick = { mapUuid ->
-                        navController.navigate("map_detail/$mapUuid")
+                        navController.navigateSafe("map_detail/$mapUuid")
                     }
                 )
             }
@@ -183,7 +184,7 @@ fun AppNavGraph(
                 MapDetailScreen(
                     onBack = { navController.popBackStack() },
                     onGuideClick = { mapUuid ->
-                        navController.navigate("agent_select/$mapUuid")
+                        navController.navigateSafe("agent_select/$mapUuid")
                     }
                 )
             }
@@ -195,7 +196,7 @@ fun AppNavGraph(
                 AgentSelectScreen(
                     onBack = { navController.popBackStack() },
                     onAgentClick = { agentUuid, mapUuid ->
-                        navController.navigate("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
+                        navController.navigateSafe("lineup/agentUuid=$agentUuid&mapUuid=$mapUuid")
                     }
                 )
             }
@@ -211,7 +212,7 @@ fun AppNavGraph(
                 LineupsScreen(
                     onBack = { navController.popBackStack() },
                     onLineupClick = { lineupId ->
-                        navController.navigate("lineup_detail/$lineupId")
+                        navController.navigateSafe("lineup_detail/$lineupId")
                     }
                 )
             }

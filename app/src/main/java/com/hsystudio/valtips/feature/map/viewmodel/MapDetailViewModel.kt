@@ -20,7 +20,7 @@ class MapDetailViewModel @Inject constructor(
     private val mapUuid: String = checkNotNull(savedStateHandle["mapUuid"])
 
     // 해당 맵의 상세 정보를 관찰하는 상태 플로우
-    val uiStateFlow: StateFlow<MapDetailUiState?> =
+    val uiState: StateFlow<MapDetailUiState?> =
         repo.observeMapDetail(mapUuid)
             .stateIn(
                 scope = viewModelScope,

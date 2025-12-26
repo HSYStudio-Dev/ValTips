@@ -8,10 +8,3 @@ data class MapListItem(
     val listImageLocal: String?,
     val isActiveInRotation: Boolean
 )
-
-// 시즌 활성/제외 맵 목록 UI 상태
-data class MapsUiState(
-    val actTitle: String? = null,
-    val activeMaps: List<MapListItem> = emptyList(),
-    val retiredMaps: List<MapListItem> = emptyList()
-)

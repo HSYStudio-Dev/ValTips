@@ -40,7 +40,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.hsystudio.valtips.R
 import com.hsystudio.valtips.feature.agent.viewmodel.AgentDetailViewModel
@@ -74,7 +74,7 @@ fun AgentDetailScreen(
     onGuideClick: (agentUuid: String) -> Unit,
     viewModel: AgentDetailViewModel = hiltViewModel()
 ) {
-    val detailUi by viewModel.uiStateFlow.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -84,7 +84,7 @@ fun AgentDetailScreen(
             )
         }
     ) { values ->
-        when (val data = detailUi) {
+        when (val data = uiState) {
             null -> Box(
                 modifier = Modifier
                     .fillMaxSize()
