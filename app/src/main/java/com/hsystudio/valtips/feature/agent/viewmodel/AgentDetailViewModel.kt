@@ -20,7 +20,7 @@ class AgentDetailViewModel @Inject constructor(
     private val agentUuid: String = checkNotNull(savedStateHandle["agentUuid"])
 
     // 해당 요원의 상세 정보를 관찰하는 상태 플로우
-    val uiStateFlow: StateFlow<AgentDetailUiState?> =
+    val uiState: StateFlow<AgentDetailUiState?> =
         repo.observeAgentDetail(agentUuid)
             .stateIn(
                 scope = viewModelScope,

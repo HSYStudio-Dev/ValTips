@@ -1,13 +1,12 @@
 package com.hsystudio.valtips.data.mapper
 
-import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.entity.MapEntity
 import com.hsystudio.valtips.feature.map.model.MapDetailUiState
 import com.hsystudio.valtips.feature.map.model.MapRecommendedAgentItem
 
 // MapEntity + AgentEntity → UI 표시용 모델로 변환
 fun MapEntity.toDetailUi(
-    agents: List<AgentEntity>
+    agents: List<MapRecommendedAgentItem>
 ): MapDetailUiState {
     // 추천 요원 uuid 리스트 변환
     val recommendedIds = listOfNotNull(
@@ -22,12 +21,6 @@ fun MapEntity.toDetailUi(
     val recommendedAgents = agents
         .filter { it.uuid in recommendedIds }
         .sortedBy { recommendedIds.indexOf(it.uuid) }
-        .map { agent ->
-            MapRecommendedAgentItem(
-                uuid = agent.uuid,
-                iconLocal = agent.displayIconLocal
-            )
-        }
 
     return MapDetailUiState(
         uuid = uuid,

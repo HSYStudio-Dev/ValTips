@@ -36,7 +36,7 @@ fun MapDetailScreen(
     onGuideClick: (String) -> Unit,
     viewModel: MapDetailViewModel = hiltViewModel()
 ) {
-    val detailUi by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // 스크롤 상태
     val scroll = rememberScrollState()
@@ -53,7 +53,7 @@ fun MapDetailScreen(
             )
         }
     ) { values ->
-        when (val data = detailUi) {
+        when (val data = uiState) {
             null -> Box(
                 modifier = Modifier
                     .fillMaxSize()

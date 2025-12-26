@@ -8,6 +8,7 @@ import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.relation.AgentWithDetails
 import com.hsystudio.valtips.domain.model.AgentCardItem
 import com.hsystudio.valtips.feature.login.model.PortraitItem
+import com.hsystudio.valtips.feature.map.model.MapRecommendedAgentItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,16 +33,16 @@ interface AgentDao {
     @Query("SELECT uuid, roleUuid, displayIconLocal AS agentIconLocal FROM agents WHERE roleUuid = :roleUuid")
     fun observeCardsByRole(roleUuid: String): Flow<List<AgentCardItem>>
 
-    // --- Flow 버전 (UI 바인딩용) ---
+    // 요원 상세 화면 - 요원 상세 정보 조회
     @Transaction
     @Query("SELECT * FROM agents WHERE uuid = :uuid LIMIT 1")
     fun observeWithDetails(uuid: String): Flow<AgentWithDetails?>
 
-    // --- 맵 상세 추천 요원 조회 ---
-    @Query("SELECT * FROM agents")
-    fun observeAll(): Flow<List<AgentEntity>>
+    // 맵 상세 화면 - 추천 요원 이미지 조회(추천 요원 카드)
+    @Query("SELECT uuid, displayIconLocal AS iconLocal FROM agents")
+    fun observeRecAgents(): Flow<List<MapRecommendedAgentItem>>
 
-    // 여러 agentUuid에 대해 details를 한 번에 조회
+    // 라인업 화면 - 여러 agentUuid에 대해 details를 한 번에 조회
     @Transaction
     @Query("SELECT * FROM agents WHERE uuid IN (:uuids)")
     suspend fun getWithDetailsByUuids(uuids: List<String>): List<AgentWithDetails>

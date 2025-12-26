@@ -31,6 +31,7 @@ interface MapDao {
     )
     fun observeAllMapCards(): Flow<List<MapListItem>>
 
+    // 맵 상세 화면 - 맵 상세 정보 조회
     @Query("SELECT * FROM maps WHERE uuid = :uuid LIMIT 1")
     fun observeByUuid(uuid: String): Flow<MapEntity?>
 }

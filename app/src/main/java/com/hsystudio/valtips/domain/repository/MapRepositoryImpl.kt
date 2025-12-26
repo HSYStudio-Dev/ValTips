@@ -28,7 +28,7 @@ class MapRepositoryImpl @Inject constructor(
     override fun observeMapDetail(mapUuid: String): Flow<MapDetailUiState?> =
         combine(
             mapDao.observeByUuid(mapUuid),
-            agentDao.observeAll()
+            agentDao.observeRecAgents()
         ) { mapEntity, agents ->
             mapEntity?.toDetailUi(agents)
         }

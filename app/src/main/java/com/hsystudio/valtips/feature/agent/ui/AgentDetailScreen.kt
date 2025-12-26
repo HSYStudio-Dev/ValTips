@@ -74,7 +74,7 @@ fun AgentDetailScreen(
     onGuideClick: (agentUuid: String) -> Unit,
     viewModel: AgentDetailViewModel = hiltViewModel()
 ) {
-    val detailUi by viewModel.uiStateFlow.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -84,7 +84,7 @@ fun AgentDetailScreen(
             )
         }
     ) { values ->
-        when (val data = detailUi) {
+        when (val data = uiState) {
             null -> Box(
                 modifier = Modifier
                     .fillMaxSize()
