@@ -7,6 +7,7 @@ import androidx.room.Upsert
 import com.hsystudio.valtips.data.local.entity.AgentEntity
 import com.hsystudio.valtips.data.local.relation.AgentWithDetails
 import com.hsystudio.valtips.domain.model.AgentCardItem
+import com.hsystudio.valtips.feature.login.model.PortraitItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,6 +20,10 @@ interface AgentDao {
     @Query("DELETE FROM agents")
     suspend fun clearAll()
 
+    // 로그인 화면 - 요원 초상화 조회
+    @Query("SELECT fullPortraitUrl, fullPortraitLocal FROM agents")
+    suspend fun getAllPortrait(): List<PortraitItem>
+
     // 요원 & 요원 선택 화면 - 전체 요원 조회(요원 카드)
     @Query("SELECT uuid, roleUuid, displayIconLocal AS agentIconLocal FROM agents")
     fun observeAllCards(): Flow<List<AgentCardItem>>
@@ -26,9 +31,6 @@ interface AgentDao {
     // 요원 & 요원 선택 화면 - 역할별 요원 조회(요원 카드)
     @Query("SELECT uuid, roleUuid, displayIconLocal AS agentIconLocal FROM agents WHERE roleUuid = :roleUuid")
     fun observeCardsByRole(roleUuid: String): Flow<List<AgentCardItem>>
-
-    @Query("SELECT * FROM agents")
-    suspend fun getAll(): List<AgentEntity>
 
     // --- Flow 버전 (UI 바인딩용) ---
     @Transaction

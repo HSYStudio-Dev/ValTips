@@ -236,7 +236,7 @@ class LoginViewModel @Inject constructor(
     /** 요원 이미지 불러오기 */
     private fun loadPortraitsFromDb() {
         viewModelScope.launch {
-            runCatching { agentDao.getAll() }
+            runCatching { agentDao.getAllPortrait() }
                 .onSuccess { agents ->
                     val paths = agents.mapNotNull { agent ->
                         agent.fullPortraitLocal
