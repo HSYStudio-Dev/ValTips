@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hsystudio.valtips.R
 import com.hsystudio.valtips.feature.login.model.Destination
 import com.hsystudio.valtips.feature.login.ui.dialog.DownloadConfirmDialog
@@ -62,13 +62,13 @@ fun SplashScreen(
     BackHandler(enabled = true) { }
 
     val context = LocalContext.current
-    val syncRunning by viewModel.syncRunning.collectAsState()
-    val syncPhase by viewModel.syncPhase.collectAsState()
-    val dialogVisible by viewModel.downloadDialogVisible.collectAsState()
-    val sizeMb by viewModel.downloadSizeMb.collectAsState()
-    val networkType by viewModel.networkType.collectAsState()
-    val progressPercent by viewModel.progressPercent.collectAsState()
-    val progressLabel by viewModel.progressLabel.collectAsState()
+    val syncRunning by viewModel.syncRunning.collectAsStateWithLifecycle()
+    val syncPhase by viewModel.syncPhase.collectAsStateWithLifecycle()
+    val dialogVisible by viewModel.downloadDialogVisible.collectAsStateWithLifecycle()
+    val sizeMb by viewModel.downloadSizeMb.collectAsStateWithLifecycle()
+    val networkType by viewModel.networkType.collectAsStateWithLifecycle()
+    val progressPercent by viewModel.progressPercent.collectAsStateWithLifecycle()
+    val progressLabel by viewModel.progressLabel.collectAsStateWithLifecycle()
 
     // Todo : 추후 RSO 자동 로그인 결과로 수정
     val isLoggedIn = false
