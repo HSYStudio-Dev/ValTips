@@ -14,11 +14,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +44,15 @@ fun AgentSelectScreen(
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
     val mapUuid = viewModel.mapUuid
+
+    // 그리드 스크롤 상태
+    val gridState = rememberLazyGridState()
+
+    // 역할이 바뀔 때마다 스크롤 맨 위로 이동
+    LaunchedEffect(uiState.selectedRoleUuid) {
+        // 애니메이션 없이 즉시 이동
+        gridState.scrollToItem(0)
+    }
 
     Scaffold(
         topBar = {
@@ -176,17 +187,25 @@ fun AgentSelectScreen(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                                     verticalArrangement = Arrangement.spacedBy(16.dp),
                                     contentPadding = PaddingValues(bottom = verticalPadding),
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    state = gridState
                                 ) {
-                                    items(uiState.agents, key = { it.uuid }) { agent ->
+                                    items(
+                                        items = uiState.agents,
+                                        key = { it.uuid }
+                                    ) { agent ->
                                         val hasLineups = uiState.lineupStatus[agent.uuid] ?: false
-                                        AgentCard(
-                                            agent = agent,
-                                            onClick = {
-                                                onAgentClick(agent.uuid, mapUuid)
-                                            },
-                                            enabled = hasLineups
-                                        )
+                                        Box(
+                                            modifier = Modifier.animateItem()
+                                        ) {
+                                            AgentCard(
+                                                agent = agent,
+                                                onClick = {
+                                                    onAgentClick(agent.uuid, mapUuid)
+                                                },
+                                                enabled = hasLineups
+                                            )
+                                        }
                                     }
                                 }
                             }

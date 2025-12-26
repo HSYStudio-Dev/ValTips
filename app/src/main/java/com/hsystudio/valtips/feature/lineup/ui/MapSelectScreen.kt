@@ -173,7 +173,10 @@ fun MapSelectScreen(
                                     }
 
                                     // 시즌 활성 맵
-                                    items(uiState.activeMaps, key = { it.uuid }) { map ->
+                                    items(
+                                        items = uiState.activeMaps,
+                                        key = { it.uuid }
+                                    ) { map ->
                                         val hasLineups = uiState.lineupStatus[map.uuid] ?: false
                                         MapCard(
                                             item = map,
@@ -200,7 +203,10 @@ fun MapSelectScreen(
                                             )
                                         }
 
-                                        items(uiState.retiredMaps, key = { it.uuid }) { map ->
+                                        items(
+                                            items = uiState.retiredMaps,
+                                            key = { it.uuid }
+                                        ) { map ->
                                             val hasLineups = uiState.lineupStatus[map.uuid] ?: false
                                             MapCard(
                                                 item = map,
