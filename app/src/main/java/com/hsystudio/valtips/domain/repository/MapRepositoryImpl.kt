@@ -18,17 +18,7 @@ class MapRepositoryImpl @Inject constructor(
 ) : MapRepository {
     // 맵 전체에서 리스트 카드에 필요한 정보만 실시간 관찰
     override fun observeMapCards(): Flow<List<MapListItem>> =
-        mapDao.observeMaps().map { list ->
-            list.map { m ->
-                MapListItem(
-                    uuid = m.uuid,
-                    displayName = m.displayName,
-                    englishName = m.englishName,
-                    listImageLocal = m.listViewIconLocal ?: m.splashLocal,
-                    isActiveInRotation = (m.isActiveInRotation == true)
-                )
-            }
-        }
+        mapDao.observeAllMapCards()
 
     // 현재 액트 표시
     override fun observeCurrentActName(): Flow<String?> =

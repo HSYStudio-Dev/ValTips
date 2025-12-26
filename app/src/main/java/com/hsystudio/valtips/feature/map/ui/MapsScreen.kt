@@ -1,7 +1,9 @@
 package com.hsystudio.valtips.feature.map.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,7 +35,7 @@ fun MapsScreen(
     onMapClick: (String) -> Unit,
     viewModel: MapsViewModel = hiltViewModel()
 ) {
-    val mapsUi by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -54,58 +57,104 @@ fun MapsScreen(
                 maxHeight < 800.dp -> 32.dp
                 else -> 40.dp
             }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = horizontalPadding),
-                contentPadding = PaddingValues(vertical = verticalPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // 섹션: 현재 액트
-                item {
-                    mapsUi.actTitle?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                textDecoration = TextDecoration.Underline
-                            ),
-                            color = TextGray,
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+            // 상태별 분기 (로딩 / 에러 / 정상)
+            when {
+                // 로딩 상태
+                uiState.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = TextGray)
                     }
-                }
-                // 시즌 활성화 맵
-                items(mapsUi.activeMaps, key = { it.uuid }) { map ->
-                    MapCard(
-                        item = map,
-                        active = true,
-                        onClick = onMapClick
-                    )
                 }
 
-                // 섹션: 제외된 맵
-                if (mapsUi.retiredMaps.isNotEmpty()) {
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = "제외된 맵",
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                textDecoration = TextDecoration.Underline
-                            ),
-                            color = TextGray,
-                            textAlign = TextAlign.Left,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                // 에러 상태
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = uiState.error ?: "맵 리소스를 불러오지 못했습니다.\n문제가 계속 된다면 설정 탭에서\n최신 리소스 다운로드를 진행해 주세요.",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = TextGray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                    // 시즌 비활성화 맵
-                    items(mapsUi.retiredMaps, key = { it.uuid }) { map ->
-                        MapCard(
-                            item = map,
-                            active = false,
-                            onClick = onMapClick
-                        )
+                }
+
+                // 정상
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding),
+                        contentPadding = PaddingValues(vertical = verticalPadding),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // 섹션: 현재 액트
+                        if (uiState.activeMaps.isNotEmpty()) {
+                            item {
+                                uiState.actTitle?.let {
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.headlineSmall.copy(
+                                            textDecoration = TextDecoration.Underline
+                                        ),
+                                        color = TextGray,
+                                        textAlign = TextAlign.Left,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                            // 시즌 활성화 맵
+                            items(
+                                items = uiState.activeMaps,
+                                key = { it.uuid }
+                            ) { map ->
+                                MapCard(
+                                    item = map,
+                                    active = true,
+                                    onClick = onMapClick
+                                )
+                            }
+                        }
+
+                        // 섹션: 제외된 맵
+                        if (uiState.retiredMaps.isNotEmpty()) {
+                            item {
+                                Spacer(Modifier.height(8.dp))
+                                Text(
+                                    text = "제외된 맵",
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        textDecoration = TextDecoration.Underline
+                                    ),
+                                    color = TextGray,
+                                    textAlign = TextAlign.Left,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            // 시즌 비활성화 맵
+                            items(
+                                items = uiState.retiredMaps,
+                                key = { it.uuid }
+                            ) { map ->
+                                MapCard(
+                                    item = map,
+                                    active = false,
+                                    onClick = onMapClick
+                                )
+                            }
+                        }
                     }
                 }
             }
