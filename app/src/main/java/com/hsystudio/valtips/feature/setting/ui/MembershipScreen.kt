@@ -1,4 +1,4 @@
-package com.hsystudio.valtips.feature.stats.ui
+package com.hsystudio.valtips.feature.setting.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -19,19 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hsystudio.valtips.R
-import com.hsystudio.valtips.feature.stats.viewmodel.StatsViewModel
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
 import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
-fun StatsScreen(
-    viewModel: StatsViewModel = hiltViewModel()
+fun MembershipScreen(
+    onBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            AppTopBar(title = "Stats")
+            AppTopBar(
+                title = "membership",
+                onNavClick = { onBack() }
+            )
         }
     ) { values ->
         BoxWithConstraints(
@@ -61,7 +62,7 @@ fun StatsScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_comingsoon),
-                        contentDescription = "전적 준비중",
+                        contentDescription = "멤버십 준비중",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
@@ -71,7 +72,7 @@ fun StatsScreen(
                     Spacer(Modifier.height(16.dp))
 
                     Text(
-                        text = "아직 전적 기능은 준비 중입니다!",
+                        text = "아직 멤버십 기능은 준비 중입니다!",
                         style = MaterialTheme.typography.headlineMedium,
                         color = TextGray
                     )

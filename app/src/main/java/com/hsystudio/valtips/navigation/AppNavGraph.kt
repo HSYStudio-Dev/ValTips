@@ -26,6 +26,8 @@ import com.hsystudio.valtips.feature.login.ui.SplashScreen
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.feature.map.ui.MapDetailScreen
 import com.hsystudio.valtips.feature.map.ui.MapsScreen
+import com.hsystudio.valtips.feature.setting.ui.MembershipScreen
+import com.hsystudio.valtips.feature.setting.ui.SettingRoute
 import com.hsystudio.valtips.feature.stats.ui.StatsScreen
 import com.hsystudio.valtips.ui.component.bar.AppBottomBar
 import com.hsystudio.valtips.ui.component.bar.BottomNavItems
@@ -230,6 +232,14 @@ fun AppNavGraph(
 
             // Setting
             composable(Route.SETTING) {
+                SettingRoute(
+                    onMembershipClick = { navController.navigate(Route.MEMBERSHIP) }
+                )
+            }
+
+            // Membership (앱 내부 화면)
+            composable(Route.MEMBERSHIP) {
+                MembershipScreen(onBack = { navController.popBackStack() })
             }
         }
     }

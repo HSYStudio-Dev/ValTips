@@ -29,6 +29,9 @@ import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.theme.ColorBG
 import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
+import com.hsystudio.valtips.ui.theme.GradientBlack
+import com.hsystudio.valtips.ui.theme.GradientMint
+import com.hsystudio.valtips.ui.theme.TextGray
 import kotlinx.coroutines.launch
 
 @Composable
@@ -111,7 +114,9 @@ fun OnboardingScreen(
                 ) {
                     DefaultButton(
                         text = "건너뛰기",
-                        buttonColor = ColorBlack,
+                        startColor = GradientBlack,
+                        endColor = ColorBlack,
+                        borderColor = TextGray,
                         onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.pageCount - 1)
@@ -123,7 +128,9 @@ fun OnboardingScreen(
 
                     DefaultButton(
                         text = "다  음",
-                        buttonColor = ColorMint,
+                        startColor = GradientMint,
+                        endColor = ColorMint,
+                        borderColor = TextGray,
                         onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)

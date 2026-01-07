@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
+import com.hsystudio.valtips.ui.theme.GradientMint
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
 
@@ -39,7 +40,7 @@ fun <T> SegmentedControl(
     outerRadius: Dp = 16.dp,
     innerRadius: Dp = 12.dp
 ) {
-    val dark = Color(0xFF204341)
+    val dark = GradientMint
     val mint = ColorMint
     val base = Color.Transparent
 

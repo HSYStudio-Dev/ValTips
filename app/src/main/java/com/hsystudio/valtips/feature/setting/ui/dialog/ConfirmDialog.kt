@@ -1,6 +1,5 @@
-package com.hsystudio.valtips.feature.login.ui.dialog
+package com.hsystudio.valtips.feature.setting.ui.dialog
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,64 +14,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hsystudio.valtips.ui.component.DefaultButton
+import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
 import com.hsystudio.valtips.ui.theme.GradientMint
 import com.hsystudio.valtips.ui.theme.GradientRed
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
-import java.util.Locale
 
-@SuppressLint("DefaultLocale")
 @Composable
-fun DownloadConfirmDialog(
-    sizeMb: Double?,
-    networkType: String,
+fun ConfirmDialog(
+    title: String,
+    message: String,
+    confirmText: String,
+    dismissText: String,
     onConfirm: () -> Unit,
-    onCancel: () -> Unit
+    onDismiss: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = {  },
+        onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "리소스 다운로드",
+                text = title,
                 color = TextWhite,
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth()
             )
         },
         text = {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "${sizeMb?.let { String.format(Locale.US, "%.2f", it) } ?: "--"}MB",
-                    color = ColorRed,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    "필수 리소스 다운로드가 필요합니다.",
+                    text = message,
                     color = TextGray,
                     style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    "확인을 누르면 다운로드를 시작합니다.\n취소를 누르면 앱이 종료됩니다.",
-                    color = TextGray,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    "현재 네트워크: $networkType",
-                    color = ColorMint,
-                    style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
             }
@@ -83,16 +63,19 @@ fun DownloadConfirmDialog(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // 취소 버튼
                 DefaultButton(
-                    text = "취소",
+                    text = dismissText,
                     startColor = ColorRed,
                     endColor = GradientRed,
                     borderColor = TextGray,
-                    onClick = onCancel,
+                    onClick = onDismiss,
                     modifier = Modifier.weight(1f)
                 )
+
+                // 확인 버튼
                 DefaultButton(
-                    text = "확인",
+                    text = confirmText,
                     startColor = GradientMint,
                     endColor = ColorMint,
                     borderColor = TextGray,
@@ -101,6 +84,7 @@ fun DownloadConfirmDialog(
                 )
             }
         },
+        containerColor = ColorBlack,
         modifier = Modifier.border(1.dp, TextGray, RoundedCornerShape(24.dp))
     )
 }

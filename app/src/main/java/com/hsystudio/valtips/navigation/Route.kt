@@ -19,4 +19,5 @@ object Route {
     const val LINEUP_DETAIL = "lineup_detail/{lineupId}"
 
     const val SETTING = "setting"
+    const val MEMBERSHIP = "membership"
 }
