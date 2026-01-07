@@ -21,7 +21,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -97,6 +97,9 @@ dependencies {
 
     // Desugaring 라이브러리(API 26미만 기기에서도 오류가 없이 작동)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Chrome Custom Tabs 라이브러리
+    implementation(libs.androidx.browser)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
