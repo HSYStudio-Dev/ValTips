@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.sp
 import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
+import com.hsystudio.valtips.ui.theme.GradientMint
+import com.hsystudio.valtips.ui.theme.GradientRed
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
 import java.util.Locale
@@ -83,13 +85,17 @@ fun DownloadConfirmDialog(
             ) {
                 DefaultButton(
                     text = "취소",
-                    buttonColor = ColorRed,
+                    startColor = ColorRed,
+                    endColor = GradientRed,
+                    borderColor = TextGray,
                     onClick = onCancel,
                     modifier = Modifier.weight(1f)
                 )
                 DefaultButton(
                     text = "확인",
-                    buttonColor = ColorMint,
+                    startColor = GradientMint,
+                    endColor = ColorMint,
+                    borderColor = TextGray,
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 )

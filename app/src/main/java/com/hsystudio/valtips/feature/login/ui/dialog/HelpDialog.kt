@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.theme.ColorMint
+import com.hsystudio.valtips.ui.theme.GradientMint
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
 
@@ -61,7 +62,9 @@ fun HelpDialog(
         confirmButton = {
             DefaultButton(
                 text = "확인",
-                buttonColor = ColorMint,
+                startColor = ColorMint,
+                endColor = GradientMint,
+                borderColor = ColorMint,
                 onClick = onDismiss
             )
         },

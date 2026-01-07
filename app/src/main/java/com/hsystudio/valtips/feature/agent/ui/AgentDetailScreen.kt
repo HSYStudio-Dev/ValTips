@@ -2,6 +2,8 @@ package com.hsystudio.valtips.feature.agent.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +12,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -48,6 +52,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -64,6 +72,7 @@ import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
 import com.hsystudio.valtips.ui.theme.ColorStroke
+import com.hsystudio.valtips.ui.theme.GradientMint
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
 import com.hsystudio.valtips.util.toCoilModel
@@ -256,7 +265,7 @@ fun AgentDetailScreen(
                                             // 설명 카드 컨텐츠
                                             Column(
                                                 Modifier.padding(16.dp),
-                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                                verticalArrangement = Arrangement.spacedBy(12.dp)
                                             ) {
                                                 // 스킬명 + 상세 스위치 버튼
                                                 Row(
@@ -271,38 +280,70 @@ fun AgentDetailScreen(
                                                         color = ColorRed
                                                     )
                                                     // 상세 스위치 버튼
-                                                    AssistChip(
-                                                        onClick = {
-                                                            if (!selected.details.isNullOrBlank()) {
-                                                                showDetail = !showDetail
-                                                            }
-                                                        },
-                                                        label = {
-                                                            Text(
-                                                                text = if (showDetail) "기본" else "상세",
-                                                                style = MaterialTheme.typography.bodyMedium
-                                                            )
-                                                        },
-                                                        enabled = !selected.details.isNullOrBlank(),
-                                                        trailingIcon = {
-                                                            Icon(
-                                                                painter = painterResource(R.drawable.ic_change),
-                                                                contentDescription = "전환",
-                                                                modifier = Modifier.size(20.dp)
-                                                            )
-                                                        },
-                                                        colors = AssistChipDefaults.assistChipColors(
-                                                            containerColor = ColorMint,
-                                                            labelColor = TextWhite,
-                                                            trailingIconContentColor = TextWhite
-                                                        ),
-                                                        border = AssistChipDefaults.assistChipBorder(
-                                                            enabled = !selected.details.isNullOrBlank(),
-                                                            borderColor = TextWhite,
-                                                            borderWidth = 0.5.dp
-                                                        ),
-                                                        modifier = Modifier.height(40.dp)
+                                                    val enabled = !selected.details.isNullOrBlank()
+                                                    val rotation by animateFloatAsState(
+                                                        targetValue = if (showDetail) 180f else 0f,
+                                                        animationSpec = tween(durationMillis = 180),
+                                                        label = "chipIconRotation"
                                                     )
+
+                                                    val chipBrush = Brush.horizontalGradient(
+                                                        colors = listOf(ColorMint, GradientMint)
+                                                    )
+                                                    val chipShape = RoundedCornerShape(20.dp)
+
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .height(40.dp)
+                                                            .clip(chipShape)
+                                                            .background(chipBrush)
+                                                            .border(
+                                                                width = 0.5.dp,
+                                                                color = TextWhite.copy(
+                                                                    alpha = if (enabled) {
+                                                                        1f
+                                                                    } else {
+                                                                        0.35f
+                                                                    }
+                                                                ),
+                                                                shape = chipShape
+                                                            )
+                                                            .padding(horizontal = 1.dp, vertical = 1.dp)
+                                                    ) {
+                                                        AssistChip(
+                                                            onClick = {
+                                                                if (!selected.details.isNullOrBlank()) {
+                                                                    showDetail = !showDetail
+                                                                }
+                                                            },
+                                                            label = {
+                                                                Text(
+                                                                    text = if (showDetail) "기본" else "상세",
+                                                                    style = MaterialTheme.typography.bodyMedium
+                                                                )
+                                                            },
+                                                            enabled = enabled,
+                                                            trailingIcon = {
+                                                                Icon(
+                                                                    painter = painterResource(R.drawable.ic_change),
+                                                                    contentDescription = "전환",
+                                                                    modifier = Modifier
+                                                                        .size(20.dp)
+                                                                        .rotate(rotation)
+                                                                )
+                                                            },
+                                                            colors = AssistChipDefaults.assistChipColors(
+                                                                containerColor = Color.Transparent,
+                                                                labelColor = TextWhite,
+                                                                trailingIconContentColor = TextWhite,
+                                                                disabledContainerColor = Color.Transparent,
+                                                                disabledLabelColor = TextWhite.copy(alpha = 0.6f),
+                                                                disabledTrailingIconContentColor = TextWhite.copy(0.6f)
+                                                            ),
+                                                            border = null,
+                                                            modifier = Modifier.height(40.dp)
+                                                        )
+                                                    }
                                                 }
 
                                                 // 스킬 설명
