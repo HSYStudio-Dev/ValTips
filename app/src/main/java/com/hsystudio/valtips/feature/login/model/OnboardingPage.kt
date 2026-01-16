@@ -7,10 +7,9 @@ data class OnboardingPage(
     @DrawableRes val imageRes: Int
 )
 
-// Todo: 임시 이미지 - 추후 수정
 val onboardingPages = listOf(
     OnboardingPage(R.drawable.onboarding_1),
-    OnboardingPage(R.drawable.onboarding_1),
-    OnboardingPage(R.drawable.onboarding_1),
-    OnboardingPage(R.drawable.onboarding_1),
+    OnboardingPage(R.drawable.onboarding_2),
+    OnboardingPage(R.drawable.onboarding_3),
+    OnboardingPage(R.drawable.onboarding_4),
 )
