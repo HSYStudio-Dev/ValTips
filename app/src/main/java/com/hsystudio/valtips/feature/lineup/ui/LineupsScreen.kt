@@ -246,9 +246,14 @@ fun LineupsScreen(
                                     }
                                 }
 
-                                if (defenseList.isNotEmpty()) {
+                                if (attackList.isNotEmpty() && defenseList.isNotEmpty()) {
                                     item {
                                         Spacer(Modifier.height(8.dp))
+                                    }
+                                }
+
+                                if (defenseList.isNotEmpty()) {
+                                    item {
                                         Text(
                                             text = "수비(${defenseList.size})",
                                             style = MaterialTheme.typography.headlineSmall,
