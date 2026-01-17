@@ -23,9 +23,17 @@ class AppPrefsManager @Inject constructor(
     private object PreferencesKeys {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val LAST_SYNC_TIMESTAMP = stringPreferencesKey("my_last_sync_timestamp")
+
+        // 사용자가 동의한 약관 버전
+        val ACCEPTED_TERMS_VERSION = stringPreferencesKey("accepted_terms_version")
+
+        // 사용자가 동의한 개인정보처리방침 버전
+        val ACCEPTED_PRIVACY_VERSION = stringPreferencesKey("accepted_privacy_version")
     }
 
+    // ─────────────────────────────
     // 조회
+    // ─────────────────────────────
     val onboardingCompletedFlow: Flow<Boolean> =
         context.dataStore.data
             .catch { exception ->
@@ -48,7 +56,33 @@ class AppPrefsManager @Inject constructor(
             }
             .map { it[PreferencesKeys.LAST_SYNC_TIMESTAMP] }
 
+    // 동의한 약관 버전 조회
+    val acceptedTermsVersionFlow: Flow<String?> =
+        context.dataStore.data
+            .catch { e ->
+                if (e is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw e
+                }
+            }
+            .map { it[PreferencesKeys.ACCEPTED_TERMS_VERSION] }
+
+    // 동의한 개인정보처리방침 버전 조회
+    val acceptedPrivacyVersionFlow: Flow<String?> =
+        context.dataStore.data
+            .catch { e ->
+                if (e is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw e
+                }
+            }
+            .map { it[PreferencesKeys.ACCEPTED_PRIVACY_VERSION] }
+
+    // ─────────────────────────────
     // 저장
+    // ─────────────────────────────
     suspend fun setOnboardingCompleted(done: Boolean) {
         context.dataStore.edit { it[PreferencesKeys.ONBOARDING_COMPLETED] = done }
     }
@@ -57,12 +91,32 @@ class AppPrefsManager @Inject constructor(
         context.dataStore.edit { it[PreferencesKeys.LAST_SYNC_TIMESTAMP] = timestamp }
     }
 
+    // 약관/개인정보처리방침 동의 버전 저장
+    suspend fun setAcceptedPolicyVersions(
+        termsVersion: String,
+        privacyVersion: String
+    ) {
+        context.dataStore.edit {
+            it[PreferencesKeys.ACCEPTED_TERMS_VERSION] = termsVersion
+            it[PreferencesKeys.ACCEPTED_PRIVACY_VERSION] = privacyVersion
+        }
+    }
+
+    // ─────────────────────────────
     // 삭제
+    // ─────────────────────────────
     suspend fun clearOnboarding() {
         context.dataStore.edit { it.remove(PreferencesKeys.ONBOARDING_COMPLETED) }
     }
 
     suspend fun clearLastSync() {
         context.dataStore.edit { it.remove(PreferencesKeys.LAST_SYNC_TIMESTAMP) }
+    }
+
+    suspend fun clearAcceptedPolicyVersions() {
+        context.dataStore.edit {
+            it.remove(PreferencesKeys.ACCEPTED_TERMS_VERSION)
+            it.remove(PreferencesKeys.ACCEPTED_PRIVACY_VERSION)
+        }
     }
 }

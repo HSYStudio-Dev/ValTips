@@ -24,6 +24,7 @@ import com.hsystudio.valtips.ui.theme.ColorRed
 @Composable
 fun BorderButton(
     text: String,
+    btnColor: Color = ColorRed,
     onClick: () -> Unit = {},
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
 ) {
@@ -90,7 +91,7 @@ fun BorderButton(
     ) {
         Button(
             onClick = onClick,
-            colors = ButtonDefaults.buttonColors(containerColor = ColorRed),
+            colors = ButtonDefaults.buttonColors(containerColor = btnColor),
             shape = RectangleShape,
             contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = Modifier

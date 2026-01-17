@@ -44,13 +44,17 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.hsystudio.valtips.R
 import com.hsystudio.valtips.di.ImageLoaderEntryPoint
+import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.ui.dialog.HelpDialog
+import com.hsystudio.valtips.feature.login.ui.dialog.TermsConsentDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
+import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.TextBlack
 import com.hsystudio.valtips.ui.theme.TextGray
 import com.hsystudio.valtips.ui.theme.TextWhite
 import com.hsystudio.valtips.util.PrefetchImages
+import com.hsystudio.valtips.util.openCustomTab
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.delay
 import java.io.File
@@ -75,6 +79,16 @@ fun LoginScreen(
 
     // 안내 사항 다이얼로그 표시 상태
     var showHelp by remember { mutableStateOf(false) }
+
+    // 현재 앱 버전 기준 재동의 필요 여부
+    val isPolicyConsentRequired by viewModel.isPolicyConsentRequired.collectAsStateWithLifecycle()
+    // 동의 여부에 따른 UI 분기용
+    val isReConsent by viewModel.isReConsent.collectAsStateWithLifecycle()
+
+    // 약관 동의 다이얼로그 표시 상태
+    var showTermsDialog by remember { mutableStateOf(false) }
+    // 약관 동의 후 액션
+    var pendingAction by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     // 에러 메시지 토스트 출력
     LaunchedEffect(Unit) {
@@ -208,13 +222,43 @@ fun LoginScreen(
                 BorderButton(
                     text = "Riot ID로 로그인",
                     onClick = {
-                        onNavigateToHome()  // Todo: RSO 연동 후 수정
+                        val action = {
+                            // TODO: RSO 후 로그인 플로우 수정
+                            onNavigateToHome()
+                        }
+
+                        if (!isPolicyConsentRequired) {
+                            action()
+                        } else {
+                            pendingAction = action
+                            showTermsDialog = true
+                        }
                     }
                 )
+
+                Spacer(Modifier.height(12.dp))
+
+                // 로그인 없이 시작 버튼
+                BorderButton(
+                    text = "로그인 없이 시작",
+                    btnColor = ColorBlack,
+                    onClick = {
+                        val action = { onNavigateToHome() }
+
+                        if (!isPolicyConsentRequired) {
+                            action()
+                        } else {
+                            pendingAction = action
+                            showTermsDialog = true
+                        }
+                    }
+                )
+
                 Spacer(Modifier.height(16.dp))
+
                 // 안내 문구
                 Text(
-                    text = "로그인 시 프로필이 공개 설정됩니다.\n자세한 내용은 [안내 사항]을 눌러 확인해 주세요!",
+                    text = "원활한 서비스 제공을 위해 Riot 계정 정보와 연동됩니다.\n자세한 내용은 [안내 사항]을 눌러 확인해 주세요!",
                     color = TextGray,
                     style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center
@@ -237,6 +281,30 @@ fun LoginScreen(
     if (showHelp) {
         HelpDialog(
             onDismiss = { showHelp = false }
+        )
+    }
+
+    // 약관 동의 다이얼로그 연결
+    if (showTermsDialog) {
+        TermsConsentDialog(
+            isReConsent = isReConsent,
+            onOpenTerms = {
+                openCustomTab(context, TermsPolicy.TERMS_URL)
+            },
+            onOpenPrivacy = {
+                openCustomTab(context, TermsPolicy.PRIVACY_URL)
+            },
+            onConfirm = {
+                viewModel.acceptLatestPolicies()
+                showTermsDialog = false
+
+                pendingAction?.invoke()
+                pendingAction = null
+            },
+            onCancel = {
+                showTermsDialog = false
+                pendingAction = null
+            }
         )
     }
 }

@@ -10,16 +10,20 @@ import androidx.lifecycle.viewModelScope
 import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.repository.ResourceRepository
+import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.model.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -83,6 +87,38 @@ class LoginViewModel @Inject constructor(
     private val _portraitData = MutableStateFlow<List<String>>(emptyList())
     val portraitData: StateFlow<List<String>> = _portraitData.asStateFlow()
 
+    // ─────────────────────────────
+    // 약관/개인정보처리방침 동의(버전 관리)
+    // ─────────────────────────────
+    // 사용자가 마지막으로 동의한 버전(없으면 null)
+    private val acceptedTermsVersion: StateFlow<String?> =
+        prefsManager.acceptedTermsVersionFlow
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    private val acceptedPrivacyVersion: StateFlow<String?> =
+        prefsManager.acceptedPrivacyVersionFlow
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    // 현재 앱 버전 기준 재동의 필요 여부
+    val isPolicyConsentRequired: StateFlow<Boolean> =
+        combine(acceptedTermsVersion, acceptedPrivacyVersion) { terms, privacy ->
+            val termsOk = (terms == TermsPolicy.REQUIRED_TERMS_VERSION)
+            val privacyOk = (privacy == TermsPolicy.REQUIRED_PRIVACY_VERSION)
+            !(termsOk && privacyOk)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    // 동의 여부에 따른 UI 분기용
+    val isReConsent: StateFlow<Boolean> =
+        combine(acceptedTermsVersion, acceptedPrivacyVersion) { terms, privacy ->
+            val hasAny = !terms.isNullOrBlank() || !privacy.isNullOrBlank()
+            val requiredMismatch =
+                terms != TermsPolicy.REQUIRED_TERMS_VERSION || privacy != TermsPolicy.REQUIRED_PRIVACY_VERSION
+            hasAny && requiredMismatch
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    // ─────────────────────────────
+    // 함수 정의
+    // ─────────────────────────────
     // 온보딩 완료 저장
     fun setOnboardingCompleted() {
         viewModelScope.launch { prefsManager.setOnboardingCompleted(true) }
@@ -262,6 +298,16 @@ class LoginViewModel @Inject constructor(
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "모바일 데이터"
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "유선(Ethernet)"
             else -> "기타 네트워크"
+        }
+    }
+
+    /** 동의 완료 시 버전 저장 */
+    fun acceptLatestPolicies() {
+        viewModelScope.launch {
+            prefsManager.setAcceptedPolicyVersions(
+                termsVersion = TermsPolicy.REQUIRED_TERMS_VERSION,
+                privacyVersion = TermsPolicy.REQUIRED_PRIVACY_VERSION
+            )
         }
     }
 }
