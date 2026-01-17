@@ -80,11 +80,6 @@ fun LoginScreen(
     // 안내 사항 다이얼로그 표시 상태
     var showHelp by remember { mutableStateOf(false) }
 
-    // 현재 앱 버전 기준 재동의 필요 여부
-    val isPolicyConsentRequired by viewModel.isPolicyConsentRequired.collectAsStateWithLifecycle()
-    // 동의 여부에 따른 UI 분기용
-    val isReConsent by viewModel.isReConsent.collectAsStateWithLifecycle()
-
     // 약관 동의 다이얼로그 표시 상태
     var showTermsDialog by remember { mutableStateOf(false) }
     // 약관 동의 후 액션
@@ -222,17 +217,11 @@ fun LoginScreen(
                 BorderButton(
                     text = "Riot ID로 로그인",
                     onClick = {
-                        val action = {
+                        pendingAction = {
                             // TODO: RSO 후 로그인 플로우 수정
                             onNavigateToHome()
                         }
-
-                        if (!isPolicyConsentRequired) {
-                            action()
-                        } else {
-                            pendingAction = action
-                            showTermsDialog = true
-                        }
+                        showTermsDialog = true
                     }
                 )
 
@@ -243,14 +232,8 @@ fun LoginScreen(
                     text = "로그인 없이 시작",
                     btnColor = ColorBlack,
                     onClick = {
-                        val action = { onNavigateToHome() }
-
-                        if (!isPolicyConsentRequired) {
-                            action()
-                        } else {
-                            pendingAction = action
-                            showTermsDialog = true
-                        }
+                        pendingAction = { onNavigateToHome() }
+                        showTermsDialog = true
                     }
                 )
 
@@ -287,7 +270,7 @@ fun LoginScreen(
     // 약관 동의 다이얼로그 연결
     if (showTermsDialog) {
         TermsConsentDialog(
-            isReConsent = isReConsent,
+            isReConsent = false,
             onOpenTerms = {
                 openCustomTab(context, TermsPolicy.TERMS_URL)
             },
