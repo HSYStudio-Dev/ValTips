@@ -78,7 +78,7 @@ fun TermsConsentDialog(
                     text = desc,
                     color = TextGray,
                     style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Left
                 )
 
                 // 이용약관

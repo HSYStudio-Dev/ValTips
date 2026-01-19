@@ -46,6 +46,7 @@ import com.hsystudio.valtips.R
 import com.hsystudio.valtips.di.ImageLoaderEntryPoint
 import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.ui.dialog.HelpDialog
+import com.hsystudio.valtips.feature.login.ui.dialog.RiotLoginPreparingDialog
 import com.hsystudio.valtips.feature.login.ui.dialog.TermsConsentDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
@@ -79,6 +80,9 @@ fun LoginScreen(
 
     // 안내 사항 다이얼로그 표시 상태
     var showHelp by remember { mutableStateOf(false) }
+
+    // Todo : RSO 연동 후 제거(RSO 준비중 다이얼로그)
+    var showRiotPreparingDialog by remember { mutableStateOf(false) }
 
     // 약관 동의 다이얼로그 표시 상태
     var showTermsDialog by remember { mutableStateOf(false) }
@@ -217,11 +221,16 @@ fun LoginScreen(
                 BorderButton(
                     text = "Riot ID로 로그인",
                     onClick = {
-                        pendingAction = {
-                            // TODO: RSO 후 로그인 플로우 수정
-                            onNavigateToHome()
-                        }
-                        showTermsDialog = true
+                        // Todo : RSO 연동 후 첫줄 & 주석 제거
+                        showRiotPreparingDialog = true
+
+                        /**
+                         * pendingAction = {
+                         * Todo : RSO 후 로그인 플로우 수정
+                         * onNavigateToHome()
+                         * }
+                         * showTermsDialog = true
+                         */
                     }
                 )
 
@@ -288,6 +297,13 @@ fun LoginScreen(
                 showTermsDialog = false
                 pendingAction = null
             }
+        )
+    }
+
+    // (임시) RSO 미구현 안내 다이얼로그
+    if (showRiotPreparingDialog) {
+        RiotLoginPreparingDialog(
+            onConfirm = { showRiotPreparingDialog = false }
         )
     }
 }

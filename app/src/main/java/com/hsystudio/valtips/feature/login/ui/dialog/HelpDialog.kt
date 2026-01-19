@@ -3,6 +3,7 @@ package com.hsystudio.valtips.feature.login.ui.dialog
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +28,9 @@ fun HelpDialog(
             Text(
                 text = "안내 사항",
                 color = TextWhite,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.fillMaxWidth()
             )
         },
         text = {

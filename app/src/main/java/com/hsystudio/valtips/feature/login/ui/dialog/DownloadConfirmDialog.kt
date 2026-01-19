@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
@@ -40,7 +39,7 @@ fun DownloadConfirmDialog(
                 text = "리소스 다운로드",
                 color = TextWhite,
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.fillMaxWidth()
             )
         },
