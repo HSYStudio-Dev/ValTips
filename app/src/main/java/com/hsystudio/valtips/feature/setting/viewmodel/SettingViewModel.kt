@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsystudio.valtips.data.auth.AuthTokenBus
 import com.hsystudio.valtips.data.auth.FakeRiotAccountRepository
+import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.feature.setting.SettingDialogState
 import com.hsystudio.valtips.feature.setting.SettingUiEffect
 import com.hsystudio.valtips.feature.setting.SettingUiEvent
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val accountRepository: FakeRiotAccountRepository,
-    private val authTokenBus: AuthTokenBus
+    private val authTokenBus: AuthTokenBus,
+    private val appPrefsManager: AppPrefsManager
 ) : ViewModel() {
     // UI 상태
     private val _uiState = MutableStateFlow(SettingUiState())
@@ -132,6 +134,21 @@ class SettingViewModel @Inject constructor(
                     )
                 )
             }
+
+            // Todo : [DEV 옵션] 온보딩 기록 삭제 버튼
+            is SettingUiEvent.OnClickDeleteOnboarding -> {
+                viewModelScope.launch {
+                    appPrefsManager.clearOnboarding()
+                }
+            }
+
+            // Todo : [DEV 옵션] 약관 동의 기록 삭제 버튼
+            is SettingUiEvent.OnClickDeleteAgree -> {
+                viewModelScope.launch {
+                    appPrefsManager.clearAcceptedPolicyVersions()
+                }
+            }
+
             else -> Unit
         }
     }

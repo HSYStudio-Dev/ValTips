@@ -47,6 +47,12 @@ sealed interface SettingUiEvent {
     data class ToggleProMembership(
         val enabled: Boolean
     ) : SettingUiEvent
+
+    // DEV 옵션: 온보딩 기록 삭제(테스트용)
+    data object OnClickDeleteOnboarding : SettingUiEvent
+
+    // DEV 옵션: 약관 동의 기록 삭제(테스트용)
+    data object OnClickDeleteAgree : SettingUiEvent
 }
 
 // Setting 화면에서 "한 번만 실행"되어야 하는 동작(네비게이션/토스트 등)을 전달하는 이펙트 집합

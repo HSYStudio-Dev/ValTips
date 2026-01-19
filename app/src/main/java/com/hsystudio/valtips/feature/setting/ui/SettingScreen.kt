@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -31,7 +32,10 @@ import com.hsystudio.valtips.feature.setting.ui.component.CurrentAccountCard
 import com.hsystudio.valtips.feature.setting.ui.component.EmptyRiotAccountCard
 import com.hsystudio.valtips.feature.setting.ui.component.MembershipCard
 import com.hsystudio.valtips.feature.setting.ui.component.RiotAccountCard
+import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
+import com.hsystudio.valtips.ui.theme.ColorRed
+import com.hsystudio.valtips.ui.theme.GradientRed
 import com.hsystudio.valtips.ui.theme.TextWhite
 
 @Composable
@@ -177,6 +181,12 @@ fun SettingScreen(
                                 enabled = uiState.isProMember,
                                 onToggle = { onEvent(SettingUiEvent.ToggleProMembership(it)) }
                             )
+                            Spacer(Modifier.height(8.dp))
+
+                            DevDeleteDataStore(
+                                onClickOnboarding = { onEvent(SettingUiEvent.OnClickDeleteOnboarding) },
+                                onClickAgree = { onEvent(SettingUiEvent.OnClickDeleteAgree) }
+                            )
                         }
                     }
                 }
@@ -264,6 +274,68 @@ private fun DevProMembershipToggle(
             Switch(
                 checked = enabled,
                 onCheckedChange = onToggle
+            )
+        }
+    }
+}
+
+@Composable
+private fun DevDeleteDataStore(
+    onClickOnboarding: () -> Unit,
+    onClickAgree: () -> Unit
+) {
+    OutlinedCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(14.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "온보딩 기록 삭제 (DEV)",
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    text = "개발 단계 테스트용",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            DefaultButton(
+                text = "삭제",
+                startColor = ColorRed,
+                endColor = GradientRed,
+                borderColor = ColorRed,
+                onClick = onClickOnboarding,
+                modifier = Modifier.width(80.dp)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(14.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "약관 동의 기록 삭제 (DEV)",
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Text(
+                    text = "개발 단계 테스트용",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            DefaultButton(
+                text = "삭제",
+                startColor = ColorRed,
+                endColor = GradientRed,
+                borderColor = ColorRed,
+                onClick = onClickAgree,
+                modifier = Modifier.width(80.dp)
             )
         }
     }
