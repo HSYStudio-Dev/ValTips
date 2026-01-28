@@ -101,6 +101,9 @@ dependencies {
     // Chrome Custom Tabs 라이브러리
     implementation(libs.androidx.browser)
 
+    // Google AdMob
+    implementation(libs.play.services.ads)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
