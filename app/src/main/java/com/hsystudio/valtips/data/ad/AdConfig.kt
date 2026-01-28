@@ -10,8 +10,16 @@ object AdConfig {
     val AgentsNativeId: String
         get() = if (BuildConfig.DEBUG) TEST_ID else "ca-app-pub-3940256099942544/2247696110"
 
+    // 요원 상세 화면용
+    val AgentDetailNativeId: String
+        get() = if (BuildConfig.DEBUG) TEST_ID else "ca-app-pub-3940256099942544/2247696110"
+
     // 맵 화면용
     val MapsNativeId: String
+        get() = if (BuildConfig.DEBUG) TEST_ID else "ca-app-pub-3940256099942544/2247696110"
+
+    // 맵 상세 화면용
+    val MapDetailNativeId: String
         get() = if (BuildConfig.DEBUG) TEST_ID else "ca-app-pub-3940256099942544/2247696110"
 
     // 설정 화면용
