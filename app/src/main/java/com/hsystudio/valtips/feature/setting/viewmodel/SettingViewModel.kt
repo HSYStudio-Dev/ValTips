@@ -40,9 +40,9 @@ class SettingViewModel @Inject constructor(
     private val _effect = Channel<SettingUiEffect>(Channel.BUFFERED)
     val effect: Flow<SettingUiEffect> = _effect.receiveAsFlow()
 
-    // 로드된 네이티브 광고 객체 상태
+    // 광고 상태 관리
     private val _nativeAdState = MutableStateFlow<NativeAdUiState>(NativeAdUiState.Loading)
-    val nativeAdState = _nativeAdState.asStateFlow()
+    val nativeAdState: StateFlow<NativeAdUiState> = _nativeAdState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -53,7 +53,7 @@ class SettingViewModel @Inject constructor(
         observeMembership()
     }
 
-    // AppPrefsManager의 멤버십 상태를 구독
+    // AppPrefsManager의 멤버십 상태 구독
     private fun observeMembership() {
         viewModelScope.launch {
             appPrefsManager.isProMemberFlow.collectLatest { isPro ->

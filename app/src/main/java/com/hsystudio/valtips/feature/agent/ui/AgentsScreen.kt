@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,11 +29,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.agent.viewmodel.AgentsViewModel
 import com.hsystudio.valtips.ui.component.AgentCard
 import com.hsystudio.valtips.ui.component.BorderButton
 import com.hsystudio.valtips.ui.component.IconChip
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
+import com.hsystudio.valtips.ui.theme.ColorStroke
 import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
@@ -41,6 +47,7 @@ fun AgentsScreen(
     viewModel: AgentsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
 
     // 그리드 스크롤 상태
     val gridState = rememberLazyGridState()
@@ -53,7 +60,40 @@ fun AgentsScreen(
 
     Scaffold(
         topBar = {
-            AppTopBar(title = "Agents")
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // 탑바
+                AppTopBar(title = "Agents")
+
+                // 광고 영역 (프로 멤버 아닐 때만)
+                if (uiState.isProMember.not()) {
+                    HorizontalDivider(
+                        color = ColorStroke,
+                        thickness = 1.dp
+                    )
+
+                    Box {
+                        when (adState) {
+                            is NativeAdUiState.Loading -> {
+                                AdLoadingPlaceholder()
+                            }
+                            is NativeAdUiState.Error -> {
+                                AdErrorPlaceholder()
+                            }
+                            is NativeAdUiState.Success -> {
+                                NativeAdBanner(
+                                    nativeAd = (adState as NativeAdUiState.Success).ad,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(
+                        color = ColorStroke,
+                        thickness = 1.dp
+                    )
+                }
+            }
         }
     ) { values ->
         BoxWithConstraints(

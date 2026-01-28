@@ -7,5 +7,6 @@ data class MapsUiState(
     val actTitle: String? = null,
     val activeMaps: List<MapListItem> = emptyList(),
     val retiredMaps: List<MapListItem> = emptyList(),
-    val error: String? = null
+    val error: String? = null,
+    val isProMember: Boolean = false
 )
