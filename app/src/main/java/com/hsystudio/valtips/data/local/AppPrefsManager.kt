@@ -29,6 +29,9 @@ class AppPrefsManager @Inject constructor(
 
         // 사용자가 동의한 개인정보처리방침 버전
         val ACCEPTED_PRIVACY_VERSION = stringPreferencesKey("accepted_privacy_version")
+
+        // 프로 멤버십 여부
+        val IS_PRO_MEMBER = booleanPreferencesKey("is_pro_member")
     }
 
     // ─────────────────────────────
@@ -80,6 +83,18 @@ class AppPrefsManager @Inject constructor(
             }
             .map { it[PreferencesKeys.ACCEPTED_PRIVACY_VERSION] }
 
+    // 프로 멤버십 상태 조회
+    val isProMemberFlow: Flow<Boolean> =
+        context.dataStore.data
+            .catch { e ->
+                if (e is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw e
+                }
+            }
+            .map { it[PreferencesKeys.IS_PRO_MEMBER] ?: false }
+
     // ─────────────────────────────
     // 저장
     // ─────────────────────────────
@@ -100,6 +115,11 @@ class AppPrefsManager @Inject constructor(
             it[PreferencesKeys.ACCEPTED_TERMS_VERSION] = termsVersion
             it[PreferencesKeys.ACCEPTED_PRIVACY_VERSION] = privacyVersion
         }
+    }
+
+    // 프로 멤버십 상태 저장
+    suspend fun setProMember(isPro: Boolean) {
+        context.dataStore.edit { it[PreferencesKeys.IS_PRO_MEMBER] = isPro }
     }
 
     // ─────────────────────────────

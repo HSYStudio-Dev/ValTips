@@ -3,6 +3,7 @@ package com.hsystudio.valtips.feature.setting.ui
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -15,7 +16,8 @@ fun SettingRoute(
     onMembershipClick: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -36,6 +38,7 @@ fun SettingRoute(
 
     SettingScreen(
         uiState = uiState,
+        adState = adState,
         onEvent = viewModel::onEvent
     )
 }

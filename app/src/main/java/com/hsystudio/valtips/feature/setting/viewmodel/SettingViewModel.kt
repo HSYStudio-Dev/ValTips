@@ -2,9 +2,12 @@ package com.hsystudio.valtips.feature.setting.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hsystudio.valtips.data.ad.AdConfig
+import com.hsystudio.valtips.data.ad.AdRepository
 import com.hsystudio.valtips.data.auth.AuthTokenBus
 import com.hsystudio.valtips.data.auth.FakeRiotAccountRepository
 import com.hsystudio.valtips.data.local.AppPrefsManager
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.setting.SettingDialogState
 import com.hsystudio.valtips.feature.setting.SettingUiEffect
 import com.hsystudio.valtips.feature.setting.SettingUiEvent
@@ -26,7 +29,8 @@ import javax.inject.Inject
 class SettingViewModel @Inject constructor(
     private val accountRepository: FakeRiotAccountRepository,
     private val authTokenBus: AuthTokenBus,
-    private val appPrefsManager: AppPrefsManager
+    private val appPrefsManager: AppPrefsManager,
+    private val adRepository: AdRepository
 ) : ViewModel() {
     // UI 상태
     private val _uiState = MutableStateFlow(SettingUiState())
@@ -36,12 +40,64 @@ class SettingViewModel @Inject constructor(
     private val _effect = Channel<SettingUiEffect>(Channel.BUFFERED)
     val effect: Flow<SettingUiEffect> = _effect.receiveAsFlow()
 
+    // 로드된 네이티브 광고 객체 상태
+    private val _nativeAdState = MutableStateFlow<NativeAdUiState>(NativeAdUiState.Loading)
+    val nativeAdState = _nativeAdState.asStateFlow()
+
     init {
         viewModelScope.launch {
             accountRepository.restoreFromStore()
         }
         observeAccounts()
         observeAuthTokens()
+        observeMembership()
+    }
+
+    // AppPrefsManager의 멤버십 상태를 구독
+    private fun observeMembership() {
+        viewModelScope.launch {
+            appPrefsManager.isProMemberFlow.collectLatest { isPro ->
+                _uiState.update { it.copy(isProMember = isPro) }
+                if (isPro) {
+                    destroyAd()
+                } else {
+                    loadAd()
+                }
+            }
+        }
+    }
+
+    // 광고 로드 함수
+    private fun loadAd() {
+        if (_nativeAdState.value is NativeAdUiState.Success) return
+
+        _nativeAdState.value = NativeAdUiState.Loading
+
+        adRepository.loadNativeAd(
+            adUnitId = AdConfig.SettingNativeId,
+            onLoaded = { ad ->
+                destroyAd()
+                _nativeAdState.value = NativeAdUiState.Success(ad)
+            },
+            onFailed = {
+                _nativeAdState.value = NativeAdUiState.Error
+            }
+        )
+    }
+
+    // 광고 메모리 해제 함수
+    private fun destroyAd() {
+        val currentState = _nativeAdState.value
+        if (currentState is NativeAdUiState.Success) {
+            currentState.ad.destroy()
+        }
+        _nativeAdState.value = NativeAdUiState.Loading
+    }
+
+    // ViewModel이 사라질 때 광고 객체 정리
+    override fun onCleared() {
+        super.onCleared()
+        destroyAd()
     }
 
     // 레포 계정 목록이 바뀔 때마다 UIState 갱신
@@ -120,8 +176,8 @@ class SettingViewModel @Inject constructor(
 
             // Todo : [DEV 옵션] 프로 멤버십 토글
             is SettingUiEvent.ToggleProMembership -> {
-                _uiState.update {
-                    it.copy(isProMember = event.enabled)
+                viewModelScope.launch {
+                    appPrefsManager.setProMember(event.enabled)
                 }
 
                 sendEffect(

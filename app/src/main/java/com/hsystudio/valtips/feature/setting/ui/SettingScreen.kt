@@ -1,6 +1,7 @@
 package com.hsystudio.valtips.feature.setting.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hsystudio.valtips.BuildConfig
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.setting.SettingDialogState
 import com.hsystudio.valtips.feature.setting.SettingUiEvent
 import com.hsystudio.valtips.feature.setting.model.SettingUiState
@@ -33,6 +35,9 @@ import com.hsystudio.valtips.feature.setting.ui.component.EmptyRiotAccountCard
 import com.hsystudio.valtips.feature.setting.ui.component.MembershipCard
 import com.hsystudio.valtips.feature.setting.ui.component.RiotAccountCard
 import com.hsystudio.valtips.ui.component.DefaultButton
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
 import com.hsystudio.valtips.ui.theme.ColorRed
 import com.hsystudio.valtips.ui.theme.GradientRed
@@ -41,6 +46,7 @@ import com.hsystudio.valtips.ui.theme.TextWhite
 @Composable
 fun SettingScreen(
     uiState: SettingUiState,
+    adState: NativeAdUiState,
     onEvent: (SettingUiEvent) -> Unit
 ) {
     Scaffold(
@@ -119,6 +125,29 @@ fun SettingScreen(
                                     enabled = uiState.isProMember,
                                     onAdd = { onEvent(SettingUiEvent.ClickAddAccount) }
                                 )
+                            }
+                        }
+                    }
+                }
+
+                // 광고 배너
+                item(key = "native_ad_section") {
+                    // 프로 멤버가 아닐 때만 표시
+                    if (!uiState.isProMember) {
+                        Box(modifier = Modifier.padding(vertical = 8.dp)) {
+                            when (adState) {
+                                is NativeAdUiState.Loading -> {
+                                    AdLoadingPlaceholder()
+                                }
+                                is NativeAdUiState.Error -> {
+                                    AdErrorPlaceholder()
+                                }
+                                is NativeAdUiState.Success -> {
+                                    NativeAdBanner(
+                                        nativeAd = adState.ad,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
                             }
                         }
                     }
