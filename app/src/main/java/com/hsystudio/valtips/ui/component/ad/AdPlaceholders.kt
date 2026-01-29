@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,12 +20,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hsystudio.valtips.ui.theme.TextBlack
-import com.hsystudio.valtips.ui.theme.TextGray
 
-private val AD_HEIGHT = 80.dp
+private val AdBackgroundColor = Color(0xFF2C3136)
+private val AdPrimaryTextColor = Color(0xFFFFFFFF)
+private val AdSecondaryTextColor = Color(0xFFB0B0B0)
+private val AD_HEIGHT = 64.dp
 
 @Composable
 fun AdLoadingPlaceholder() {
@@ -31,20 +35,24 @@ fun AdLoadingPlaceholder() {
         modifier = Modifier
             .fillMaxWidth()
             .height(AD_HEIGHT)
-            .background(Color(0xFFFFFFFF)),
+            .background(AdBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(18.dp),
                 strokeWidth = 2.dp,
-                color = TextGray
+                color = AdSecondaryTextColor
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = "광고 로딩 중...",
                 style = MaterialTheme.typography.bodySmall,
-                color = TextBlack
+                color = AdSecondaryTextColor,
+                fontSize = 12.sp
             )
         }
     }
@@ -56,31 +64,40 @@ fun AdErrorPlaceholder() {
         modifier = Modifier
             .fillMaxWidth()
             .height(AD_HEIGHT)
-            .background(Color(0xFFFFFFFF)),
+            .background(AdBackgroundColor),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Warning,
                 contentDescription = null,
-                tint = TextGray,
-                modifier = Modifier.size(20.dp)
+                tint = AdSecondaryTextColor,
+                modifier = Modifier.size(24.dp)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "광고를 불러오지 못했습니다",
-                style = MaterialTheme.typography.labelMedium,
-                color = TextBlack
-            )
-            Text(
-                text = "네트워크 상태를 확인해 주세요",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextGray,
-                fontSize = 10.sp
-            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "광고를 불러오지 못했습니다",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AdPrimaryTextColor,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = "네트워크 상태를 확인해 주세요",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AdSecondaryTextColor,
+                    fontSize = 10.sp
+                )
+            }
         }
     }
 }

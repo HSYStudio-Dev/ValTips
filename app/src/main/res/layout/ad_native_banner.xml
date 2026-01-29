@@ -1,90 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.gms.ads.nativead.NativeAdView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:gravity="center_vertical">
-        <ImageView
-            android:id="@+id/ad_app_icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="top"
-            android:background="#E0E0E0"
-            android:layout_marginTop="2dp"
-            android:contentDescription="광고 아이콘"
-            tools:src="@android:drawable/sym_def_app_icon"
-            tools:ignore="HardcodedText" />
+        android:layout_marginVertical="0dp"
+        app:cardBackgroundColor="#2C3136"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp">
+
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp"
-            android:layout_gravity="top"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ad_app_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top"
+                android:background="#45494D"
+                android:contentDescription="광고 아이콘"
+                android:layout_marginTop="2dp"
+                tools:src="@android:drawable/sym_def_app_icon"
+                tools:ignore="HardcodedText" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#F4B400"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="1dp"
-                    android:text="광고"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    tools:ignore="HardcodedText,SmallSp,TextContrastCheck" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#F4B400"
+                        android:paddingHorizontal="4dp"
+                        android:paddingVertical="1dp"
+                        android:text="AD"
+                        android:textColor="#FFFFFF"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,SmallSp,TextContrastCheck" />
+
+                    <TextView
+                        android:id="@+id/ad_headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="광고 제목" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/ad_headline"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/ad_body"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="광고 제목" />
+                    android:maxLines="2"
+                    android:textColor="#B0B0B0"
+                    android:textSize="11sp"
+                    tools:text="광고 설명1\n광고 설명2" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/ad_body"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:textColor="#757575"
+            <Button
+                android:id="@+id/ad_call_to_action"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="#53E3C6"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minHeight="0dp"
+                android:paddingVertical="0dp"
+                android:textColor="#222629"
                 android:textSize="12sp"
-                android:lineSpacingExtra="2dp"
-                tools:text="광고 설명" />
+                android:textStyle="bold"
+                tools:ignore="TouchTargetSizeCheck"
+                tools:text="설치" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/ad_call_to_action"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:backgroundTint="#2E2E2E"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            tools:text="설치" />
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 </com.google.android.gms.ads.nativead.NativeAdView>
