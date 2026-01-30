@@ -8,6 +8,7 @@ import com.hsystudio.valtips.data.auth.AuthTokenBus
 import com.hsystudio.valtips.data.auth.FakeRiotAccountRepository
 import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.domain.model.NativeAdUiState
+import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.setting.SettingDialogState
 import com.hsystudio.valtips.feature.setting.SettingUiEffect
 import com.hsystudio.valtips.feature.setting.SettingUiEvent
@@ -179,6 +180,21 @@ class SettingViewModel @Inject constructor(
             SettingUiEvent.ClickMembershipManage ->
                 sendEffect(SettingUiEffect.NavigateToMembership)
 
+            // 이용약관 클릭 -> CCT로 열기
+            SettingUiEvent.ClickTerms -> {
+                sendEffect(SettingUiEffect.OpenCustomTab(TermsPolicy.TERMS_URL))
+            }
+
+            // 개인정보처리방침 클릭 -> CCT로 열기
+            SettingUiEvent.ClickPrivacy -> {
+                sendEffect(SettingUiEffect.OpenCustomTab(TermsPolicy.PRIVACY_URL))
+            }
+
+            // 라이선스 클릭 -> CCT로 열기
+            SettingUiEvent.ClickLicenses -> {
+                sendEffect(SettingUiEffect.OpenCustomTab(TermsPolicy.LICENSE_URL))
+            }
+
             // [DEV 옵션] 프로 멤버십 토글
             is SettingUiEvent.ToggleProMembership -> {
                 viewModelScope.launch {
@@ -209,8 +225,6 @@ class SettingViewModel @Inject constructor(
                     appPrefsManager.clearAcceptedPolicyVersions()
                 }
             }
-
-            else -> Unit
         }
     }
 
