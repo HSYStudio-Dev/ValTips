@@ -34,6 +34,7 @@ import com.hsystudio.valtips.feature.setting.ui.component.CurrentAccountCard
 import com.hsystudio.valtips.feature.setting.ui.component.EmptyRiotAccountCard
 import com.hsystudio.valtips.feature.setting.ui.component.MembershipCard
 import com.hsystudio.valtips.feature.setting.ui.component.RiotAccountCard
+import com.hsystudio.valtips.ui.component.BorderButton
 import com.hsystudio.valtips.ui.component.DefaultButton
 import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
 import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
@@ -199,6 +200,16 @@ fun SettingScreen(
                     }
                 }
 
+                // 서비스 탈퇴
+                item {
+                    Spacer(Modifier.height(16.dp))
+
+                    BorderButton(
+                        text = "서비스 탈퇴",
+                        onClick = { onEvent(SettingUiEvent.ClickWithdrawal) },
+                    )
+                }
+
                 // DEV 옵션 빌드 버전 사용
                 if (BuildConfig.DEBUG) {
                     item {
@@ -254,6 +265,17 @@ fun SettingScreen(
                             "현재 로그인 기능이 준비 중입니다.\n임시 로그인을 진행하시겠습니까?"
                         },
                         confirmText = "임시 로그인",
+                        dismissText = "취소",
+                        onConfirm = { onEvent(SettingUiEvent.ConfirmDialog) },
+                        onDismiss = { onEvent(SettingUiEvent.DismissDialog) }
+                    )
+                }
+
+                is SettingDialogState.ConfirmWithdrawal -> {
+                    ConfirmDialog(
+                        title = "서비스 탈퇴",
+                        message = "정말 탈퇴하시겠습니까?\n모든 계정 정보와 설정이 삭제되며,\n이 작업은 되돌릴 수 없습니다.",
+                        confirmText = "탈퇴하기",
                         dismissText = "취소",
                         onConfirm = { onEvent(SettingUiEvent.ConfirmDialog) },
                         onDismiss = { onEvent(SettingUiEvent.DismissDialog) }

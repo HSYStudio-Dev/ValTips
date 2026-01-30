@@ -139,4 +139,13 @@ class AppPrefsManager @Inject constructor(
             it.remove(PreferencesKeys.ACCEPTED_PRIVACY_VERSION)
         }
     }
+
+    // 모든 설정 데이터 완전 초기화
+    suspend fun clearAll() {
+        context.dataStore.edit {
+            it.remove(PreferencesKeys.ONBOARDING_COMPLETED)
+            it.remove(PreferencesKeys.ACCEPTED_TERMS_VERSION)
+            it.remove(PreferencesKeys.ACCEPTED_PRIVACY_VERSION)
+        }
+    }
 }

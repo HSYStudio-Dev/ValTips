@@ -14,6 +14,7 @@ import com.hsystudio.valtips.util.openCustomTab
 @Composable
 fun SettingRoute(
     onMembershipClick: () -> Unit,
+    onNavigateToSplash: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -31,6 +32,9 @@ fun SettingRoute(
                 }
                 is SettingUiEffect.NavigateToMembership -> {
                     onMembershipClick()
+                }
+                is SettingUiEffect.NavigateToSplash -> {
+                    onNavigateToSplash()
                 }
             }
         }

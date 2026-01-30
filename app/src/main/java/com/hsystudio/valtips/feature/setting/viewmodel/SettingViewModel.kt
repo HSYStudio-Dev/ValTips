@@ -164,6 +164,11 @@ class SettingViewModel @Inject constructor(
             // 계정 카드의 로그아웃 클릭 → 로그아웃 다이얼로그 오픈
             is SettingUiEvent.ClickAccountLogout -> showLogoutDialog(event.accountId)
 
+            // 서비스 탈퇴 버튼 클릭 -> 다이얼로그 띄우기
+            SettingUiEvent.ClickWithdrawal -> {
+                _uiState.update { it.copy(dialogState = SettingDialogState.ConfirmWithdrawal) }
+            }
+
             // 다이얼로그 확인 버튼 클릭 → 현재 다이얼로그 타입에 맞는 동작 실행
             SettingUiEvent.ConfirmDialog -> onConfirmDialog()
 
@@ -174,7 +179,7 @@ class SettingViewModel @Inject constructor(
             SettingUiEvent.ClickMembershipManage ->
                 sendEffect(SettingUiEffect.NavigateToMembership)
 
-            // Todo : [DEV 옵션] 프로 멤버십 토글
+            // [DEV 옵션] 프로 멤버십 토글
             is SettingUiEvent.ToggleProMembership -> {
                 viewModelScope.launch {
                     appPrefsManager.setProMember(event.enabled)
@@ -191,14 +196,14 @@ class SettingViewModel @Inject constructor(
                 )
             }
 
-            // Todo : [DEV 옵션] 온보딩 기록 삭제 버튼
+            // [DEV 옵션] 온보딩 기록 삭제 버튼
             is SettingUiEvent.OnClickDeleteOnboarding -> {
                 viewModelScope.launch {
                     appPrefsManager.clearOnboarding()
                 }
             }
 
-            // Todo : [DEV 옵션] 약관 동의 기록 삭제 버튼
+            // [DEV 옵션] 약관 동의 기록 삭제 버튼
             is SettingUiEvent.OnClickDeleteAgree -> {
                 viewModelScope.launch {
                     appPrefsManager.clearAcceptedPolicyVersions()
@@ -253,6 +258,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    // 다이얼로그 확인 로직
     private fun onConfirmDialog() {
         // 현재 떠 있는 다이얼로그 타입을 기준으로 실행할 액션을 결정
         val dialog = _uiState.value.dialogState ?: return
@@ -263,12 +269,19 @@ class SettingViewModel @Inject constructor(
                 is SettingDialogState.ConfirmSwitch -> {
                     accountRepository.switchAccount(dialog.targetAccount.accountId)
                     sendEffect(SettingUiEffect.ShowMessage("계정이 전환되었습니다."))
+                    dismissDialog()
                 }
 
                 // 로그아웃 확정 → 레포에서 계정 제거(활성 계정이면 자동 전환 로직 포함)
                 is SettingDialogState.ConfirmLogout -> {
                     accountRepository.removeAccount(dialog.targetAccount.accountId)
                     sendEffect(SettingUiEffect.ShowMessage("계정이 로그아웃되었습니다."))
+                    dismissDialog()
+                }
+
+                is SettingDialogState.ConfirmWithdrawal -> {
+                    processWithdrawal()
+                    dismissDialog()
                 }
 
                 // Todo : [임시] 임시 로그인 확정 → 랜덤 토큰으로 Fake 계정 추가
@@ -276,11 +289,20 @@ class SettingViewModel @Inject constructor(
                     val fakeToken = UUID.randomUUID().toString()
                     handleLoginToken(fakeToken)
                     sendEffect(SettingUiEffect.ShowMessage("임시 로그인으로 처리되었습니다."))
+                    dismissDialog()
                 }
             }
         }
-        // 액션 처리 후 다이얼로그 닫기
-        dismissDialog()
+    }
+
+    // 탈퇴 처리 로직
+    private fun processWithdrawal() {
+        viewModelScope.launch {
+            appPrefsManager.clearAll()
+            accountRepository.clearAll()
+            // Todo : 탈퇴 API 추가
+            sendEffect(SettingUiEffect.NavigateToSplash)
+        }
     }
 
     // 다이얼로그 상태 초기화
