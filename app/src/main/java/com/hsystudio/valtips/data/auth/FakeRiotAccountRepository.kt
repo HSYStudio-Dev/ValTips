@@ -165,4 +165,10 @@ class FakeRiotAccountRepository @Inject constructor(
     // 현재 활성 계정 관찰
     fun observeActiveAccount(): Flow<FakeRiotAccount?> =
         accounts.map { list -> list.firstOrNull { it.isActive } }
+
+    // 저장된 모든 계정 정보 삭제
+    suspend fun clearAll() {
+        store.clearAll()
+        _accounts.value = emptyList()
+    }
 }

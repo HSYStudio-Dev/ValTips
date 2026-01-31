@@ -12,5 +12,6 @@ data class AgentSelectUiState(
     val mapSplashLocal: String? = null,
     val placeholderIconLocal: String? = null,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
+    val isProMember: Boolean = false
 )

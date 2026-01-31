@@ -4,8 +4,12 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hsystudio.valtips.data.ad.AdConfig
+import com.hsystudio.valtips.data.ad.AdRepository
+import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.data.local.dao.TierDao
 import com.hsystudio.valtips.domain.model.AgentCardItem
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.domain.model.RoleFilterItem
 import com.hsystudio.valtips.domain.repository.AgentRepository
 import com.hsystudio.valtips.domain.repository.LineupRepository
@@ -16,6 +20,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -42,6 +49,8 @@ class AgentSelectViewModel @Inject constructor(
     private val agentRepository: AgentRepository,
     private val lineupRepository: LineupRepository,
     private val tierDao: TierDao,
+    private val appPrefsManager: AppPrefsManager,
+    private val adRepository: AdRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     // NavGraph에서 전달된 맵 UUID
@@ -66,6 +75,10 @@ class AgentSelectViewModel @Inject constructor(
     // 선택된 맵 / 플레이스홀더 아이콘
     private val mapSplashFlow = mapRepository.observeMapSplashLocal(mapUuid)
     private val placeholderIconFlow = tierDao.observeTierZeroIconLocal()
+
+    // 광고 상태 관리
+    private val _nativeAdState = MutableStateFlow<NativeAdUiState>(NativeAdUiState.Loading)
+    val nativeAdState: StateFlow<NativeAdUiState> = _nativeAdState.asStateFlow()
 
     // 역할 + 선택 역할 + 요원 리스트를 합친 Flow
     private val leftCoreFlow = combine(
@@ -116,11 +129,13 @@ class AgentSelectViewModel @Inject constructor(
     val uiStateFlow = combine(
         coreStateFlow,
         isLoadingState,
-        errorState
-    ) { core, isLoading, error ->
+        errorState,
+        appPrefsManager.isProMemberFlow
+    ) { core, isLoading, error, isPro ->
         core.copy(
             isLoading = isLoading,
-            error = error
+            error = error,
+            isProMember = isPro
         )
     }.stateIn(
         scope = viewModelScope,
@@ -134,6 +149,7 @@ class AgentSelectViewModel @Inject constructor(
             rolesState.value = agentRepository.getRoleFilters()
         }
         getAgentLineupStatus()
+        observeMembership()
     }
 
     // 맵 기준 요원별 라인업 상태 불러오기
@@ -158,5 +174,51 @@ class AgentSelectViewModel @Inject constructor(
     // 역할 선택
     fun selectRole(uuidOrEmpty: String) {
         selectedRoleUuidState.value = uuidOrEmpty.ifEmpty { null }
+    }
+
+    // AppPrefsManager의 멤버십 상태 구독
+    private fun observeMembership() {
+        viewModelScope.launch {
+            appPrefsManager.isProMemberFlow.collectLatest { isPro ->
+                if (isPro) {
+                    destroyAd()
+                } else {
+                    loadAd()
+                }
+            }
+        }
+    }
+
+    // 광고 로드 함수
+    private fun loadAd() {
+        if (_nativeAdState.value is NativeAdUiState.Success) return
+
+        _nativeAdState.value = NativeAdUiState.Loading
+
+        adRepository.loadNativeAd(
+            adUnitId = AdConfig.AgentSelectNativeId,
+            onLoaded = { ad ->
+                destroyAd()
+                _nativeAdState.value = NativeAdUiState.Success(ad)
+            },
+            onFailed = {
+                _nativeAdState.value = NativeAdUiState.Error
+            }
+        )
+    }
+
+    // 광고 메모리 해제 함수
+    private fun destroyAd() {
+        val currentState = _nativeAdState.value
+        if (currentState is NativeAdUiState.Success) {
+            currentState.ad.destroy()
+        }
+        _nativeAdState.value = NativeAdUiState.Loading
+    }
+
+    // ViewModel이 사라질 때 광고 객체 정리
+    override fun onCleared() {
+        super.onCleared()
+        destroyAd()
     }
 }

@@ -47,6 +47,15 @@ sealed interface SettingUiEvent {
     data class ToggleProMembership(
         val enabled: Boolean
     ) : SettingUiEvent
+
+    // "서비스 탈퇴" 버튼 클릭
+    data object ClickWithdrawal : SettingUiEvent
+
+    // DEV 옵션: 온보딩 기록 삭제(테스트용)
+    data object OnClickDeleteOnboarding : SettingUiEvent
+
+    // DEV 옵션: 약관 동의 기록 삭제(테스트용)
+    data object OnClickDeleteAgree : SettingUiEvent
 }
 
 // Setting 화면에서 "한 번만 실행"되어야 하는 동작(네비게이션/토스트 등)을 전달하는 이펙트 집합
@@ -63,6 +72,9 @@ sealed interface SettingUiEffect {
     data class ShowMessage(
         val message: String
     ) : SettingUiEffect
+
+    // 서비스 탈퇴 성공 시 초기 화면으로 강제 이동
+    data object NavigateToSplash : SettingUiEffect
 }
 
 // Setting 화면에서 현재 떠 있는 다이얼로그의 "종류 + 필요한 데이터"를 표현하는 상태 모델
@@ -76,6 +88,9 @@ sealed interface SettingDialogState {
     data class ConfirmLogout(
         val targetAccount: FakeRiotAccount
     ) : SettingDialogState
+
+    // 서비스 탈퇴 다이얼로그
+    data object ConfirmWithdrawal : SettingDialogState
 
     // Todo : [임시] RSO 연동 전 임시 로그인/계정 추가 안내 다이얼로그
     data class DevLoginPrompt(

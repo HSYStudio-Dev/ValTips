@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,9 +26,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.map.viewmodel.MapsViewModel
 import com.hsystudio.valtips.ui.component.MapCard
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
+import com.hsystudio.valtips.ui.theme.ColorStroke
 import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
@@ -36,10 +42,44 @@ fun MapsScreen(
     viewModel: MapsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
-            AppTopBar(title = "Maps")
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // 탑바
+                AppTopBar(title = "Maps")
+
+                // 광고 영역 (프로 멤버 아닐 때만)
+                if (uiState.isProMember.not()) {
+                    HorizontalDivider(
+                        color = ColorStroke,
+                        thickness = 1.dp
+                    )
+
+                    Box {
+                        when (adState) {
+                            is NativeAdUiState.Loading -> {
+                                AdLoadingPlaceholder()
+                            }
+                            is NativeAdUiState.Error -> {
+                                AdErrorPlaceholder()
+                            }
+                            is NativeAdUiState.Success -> {
+                                NativeAdBanner(
+                                    nativeAd = (adState as NativeAdUiState.Success).ad,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(
+                        color = ColorStroke,
+                        thickness = 1.dp
+                    )
+                }
+            }
         }
     ) { values ->
         BoxWithConstraints(

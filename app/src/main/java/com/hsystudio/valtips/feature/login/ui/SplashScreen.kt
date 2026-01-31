@@ -41,13 +41,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hsystudio.valtips.R
+import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.model.Destination
 import com.hsystudio.valtips.feature.login.ui.dialog.DownloadConfirmDialog
+import com.hsystudio.valtips.feature.login.ui.dialog.TermsConsentDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.theme.ColorBG
 import com.hsystudio.valtips.ui.theme.ColorMint
 import com.hsystudio.valtips.ui.theme.ColorRed
 import com.hsystudio.valtips.ui.theme.TextGray
+import com.hsystudio.valtips.util.openCustomTab
 import kotlinx.coroutines.delay
 
 @SuppressLint("UseOfNonLambdaOffsetOverload", "DefaultLocale")
@@ -69,9 +72,7 @@ fun SplashScreen(
     val networkType by viewModel.networkType.collectAsStateWithLifecycle()
     val progressPercent by viewModel.progressPercent.collectAsStateWithLifecycle()
     val progressLabel by viewModel.progressLabel.collectAsStateWithLifecycle()
-
-    // Todo : 추후 RSO 자동 로그인 결과로 수정
-    val isLoggedIn = false
+    val showReConsentDialog by viewModel.showPolicyReConsentDialog.collectAsStateWithLifecycle()
 
     // 에러 토스트
     LaunchedEffect(Unit) {
@@ -106,7 +107,7 @@ fun SplashScreen(
         delay(300)
         startAnimation = true
         delay(1300)
-        viewModel.runStartupFlow(isLoggedIn = isLoggedIn)
+        viewModel.runStartupFlow()
     }
 
     // 로고의 offset (Y축 위치)
@@ -201,8 +202,22 @@ fun SplashScreen(
         DownloadConfirmDialog(
             sizeMb = sizeMb,
             networkType = networkType,
-            onConfirm = { viewModel.confirmInitialDownload(isLoggedIn) },
+            onConfirm = { viewModel.confirmInitialDownload() },
             onCancel = { viewModel.cancelInitialDownload() }
+        )
+    }
+    // 약관 재동의 다이얼로그
+    if (showReConsentDialog) {
+        TermsConsentDialog(
+            isReConsent = true,
+            onOpenTerms = {
+                openCustomTab(context, TermsPolicy.TERMS_URL)
+            },
+            onOpenPrivacy = {
+                openCustomTab(context, TermsPolicy.PRIVACY_URL)
+            },
+            onConfirm = { viewModel.confirmReConsent() },
+            onCancel = { viewModel.cancelReConsent() },
         )
     }
 }

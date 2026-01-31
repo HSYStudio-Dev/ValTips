@@ -8,5 +8,6 @@ data class AgentsUiState(
     val roles: List<RoleFilterItem> = emptyList(),
     val agents: List<AgentCardItem> = emptyList(),
     val selectedRoleUuid: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val isProMember: Boolean = false
 )

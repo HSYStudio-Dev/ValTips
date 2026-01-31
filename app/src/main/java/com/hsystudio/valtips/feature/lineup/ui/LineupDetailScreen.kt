@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,11 +23,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.lineup.ui.component.LineupDetailHeaderCard
 import com.hsystudio.valtips.feature.lineup.ui.component.LineupStepSection
 import com.hsystudio.valtips.feature.lineup.viewmodel.LineupDetailViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
+import com.hsystudio.valtips.ui.theme.ColorStroke
 import com.hsystudio.valtips.ui.theme.TextGray
 
 @Composable
@@ -34,6 +41,8 @@ fun LineupDetailScreen(
     viewModel: LineupDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiStateFlow.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
+    val isProMember by viewModel.isProMember.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -41,12 +50,43 @@ fun LineupDetailScreen(
                 title = "Details",
                 onNavClick = onBack
             )
+        },
+        bottomBar = {
+            // 광고 영역 (프로 멤버 아닐 때만)
+            if (!isProMember) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    HorizontalDivider(
+                        color = ColorStroke,
+                        thickness = 1.dp
+                    )
+
+                    Box {
+                        when (adState) {
+                            is NativeAdUiState.Loading -> {
+                                AdLoadingPlaceholder()
+                            }
+                            is NativeAdUiState.Error -> {
+                                AdErrorPlaceholder()
+                            }
+                            is NativeAdUiState.Success -> {
+                                NativeAdBanner(
+                                    nativeAd = (adState as NativeAdUiState.Success).ad,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     ) { values ->
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = values.calculateTopPadding())
+                .padding(
+                    top = values.calculateTopPadding(),
+                    bottom = values.calculateBottomPadding()
+                )
         ) {
             val horizontalPadding = when {
                 maxWidth < 400.dp -> 24.dp

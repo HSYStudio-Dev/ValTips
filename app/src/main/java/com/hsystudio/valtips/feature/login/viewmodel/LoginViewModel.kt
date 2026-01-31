@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.repository.ResourceRepository
+import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.model.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -57,6 +58,11 @@ class LoginViewModel @Inject constructor(
     private val _destination = MutableSharedFlow<Destination>(extraBufferCapacity = 1)
     val destination: SharedFlow<Destination> = _destination.asSharedFlow()
 
+    // 약관 재동의 다이얼로그 출력 여부
+    private val _showPolicyReConsentDialog = MutableStateFlow(false)
+    val showPolicyReConsentDialog: StateFlow<Boolean> =
+        _showPolicyReConsentDialog.asStateFlow()
+
     // --- 다운로드 다이얼로그 --- //
     // 출력 유무
     private val _downloadDialogVisible = MutableStateFlow(false)
@@ -83,6 +89,9 @@ class LoginViewModel @Inject constructor(
     private val _portraitData = MutableStateFlow<List<String>>(emptyList())
     val portraitData: StateFlow<List<String>> = _portraitData.asStateFlow()
 
+    // ─────────────────────────────
+    // 함수 정의
+    // ─────────────────────────────
     // 온보딩 완료 저장
     fun setOnboardingCompleted() {
         viewModelScope.launch { prefsManager.setOnboardingCompleted(true) }
@@ -93,7 +102,7 @@ class LoginViewModel @Inject constructor(
      * - lastSync가 없으면: 용량 조회 → 동의 다이얼로그 표시
      * - lastSync가 있으면: 델타 동기화 바로 시작
      */
-    fun runStartupFlow(isLoggedIn: Boolean = false) {
+    fun runStartupFlow() {
         if (_syncRunning.value) return
 
         viewModelScope.launch {
@@ -114,7 +123,7 @@ class LoginViewModel @Inject constructor(
                         }
                 } else {
                     // 재실행: 델타 동기화
-                    startDeltaSyncThenRoute(isLoggedIn)
+                    startDeltaSyncThenRoute()
                 }
             } catch (e: Exception) {
                 Log.e(tag, "runStartupFlow() 실패", e)
@@ -132,9 +141,9 @@ class LoginViewModel @Inject constructor(
     }
 
     /** 다이얼로그 확인 → 초기 동기화 시작 */
-    fun confirmInitialDownload(isLoggedIn: Boolean = false) {
+    fun confirmInitialDownload() {
         _downloadDialogVisible.value = false
-        startInitialSyncThenRoute(isLoggedIn)
+        startInitialSyncThenRoute()
     }
 
     // 바이트 포맷
@@ -147,7 +156,7 @@ class LoginViewModel @Inject constructor(
     }
 
     /** 초기 동기화 */
-    private fun startInitialSyncThenRoute(isLoggedIn: Boolean) {
+    private fun startInitialSyncThenRoute() {
         if (_syncRunning.value) return
         _syncRunning.value = true
         _progressPercent.value = 0
@@ -173,7 +182,7 @@ class LoginViewModel @Inject constructor(
                 _syncPhase.value = "이미지 저장 중…"
                 _progressLabel.value = null
                 loadPortraitsFromDb()
-                routeAfterSync(isLoggedIn)
+                routeAfterSync()
             }.onFailure { e ->
                 Log.e(tag, "initialSync() 실패", e)
                 _errorEvents.tryEmit("다운로드 중 오류가 발생하여 앱이 종료됩니다.")
@@ -185,7 +194,7 @@ class LoginViewModel @Inject constructor(
     }
 
     /** 델타 동기화 */
-    private fun startDeltaSyncThenRoute(isLoggedIn: Boolean) {
+    private fun startDeltaSyncThenRoute() {
         if (_syncRunning.value) return
         _syncRunning.value = true
         _progressPercent.value = 0
@@ -211,7 +220,7 @@ class LoginViewModel @Inject constructor(
                 _syncPhase.value = "이미지 저장 중..."
                 _progressLabel.value = null
                 loadPortraitsFromDb()
-                routeAfterSync(isLoggedIn)
+                routeAfterSync()
             }.onFailure { e ->
                 Log.e(tag, "deltaSync() 실패", e)
                 _errorEvents.tryEmit("업데이트 중 오류가 발생하여 앱이 종료됩니다.")
@@ -223,14 +232,39 @@ class LoginViewModel @Inject constructor(
     }
 
     /** 동기화 후 네비 지정 */
-    private suspend fun routeAfterSync(isLoggedIn: Boolean) {
+    private suspend fun routeAfterSync() {
+        // 온보딩 완료 여부
         val onboardingDone: Boolean = prefsManager.onboardingCompletedFlow.firstOrNull() ?: false
-        val dest = when {
-            !onboardingDone -> Destination.ONBOARDING
-            onboardingDone && isLoggedIn -> Destination.HOME
-            else -> Destination.LOGIN
+        // 현재 약관 동의 상태 값
+        val termsVersion = prefsManager.acceptedTermsVersionFlow.firstOrNull()
+        val privacyVersion = prefsManager.acceptedPrivacyVersionFlow.firstOrNull()
+        // 약관 동의 기록 유무 체크
+        val hasAnyConsent = !termsVersion.isNullOrBlank() || !privacyVersion.isNullOrBlank()
+        // 약관 버전 체크
+        val isLatest =
+            termsVersion == TermsPolicy.REQUIRED_TERMS_VERSION &&
+                privacyVersion == TermsPolicy.REQUIRED_PRIVACY_VERSION
+
+        // 온보딩 미완료 → 무조건 온보딩
+        if (!onboardingDone) {
+            _destination.emit(Destination.ONBOARDING)
+            return
         }
-        _destination.emit(dest)
+
+        // 온보딩 완료 + 동의 기록 없음 → 로그인 화면
+        if (!hasAnyConsent) {
+            _destination.emit(Destination.LOGIN)
+            return
+        }
+
+        // 동의 기록은 있으나 버전 불일치 → 재동의 다이얼로그 출력
+        if (!isLatest) {
+            _showPolicyReConsentDialog.value = true
+            return
+        }
+
+        // 모든 조건 통과 → 홈
+        _destination.emit(Destination.HOME)
     }
 
     /** 요원 이미지 불러오기 */
@@ -263,5 +297,34 @@ class LoginViewModel @Inject constructor(
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "유선(Ethernet)"
             else -> "기타 네트워크"
         }
+    }
+
+    /** 약관 동의 완료 시 버전 저장(로그인) */
+    fun acceptLatestPolicies() {
+        viewModelScope.launch {
+            prefsManager.setAcceptedPolicyVersions(
+                termsVersion = TermsPolicy.REQUIRED_TERMS_VERSION,
+                privacyVersion = TermsPolicy.REQUIRED_PRIVACY_VERSION
+            )
+        }
+    }
+
+    /** 약관 재동의 다이얼로그 확인 처리(스플래시) */
+    fun confirmReConsent() {
+        viewModelScope.launch {
+            prefsManager.setAcceptedPolicyVersions(
+                termsVersion = TermsPolicy.REQUIRED_TERMS_VERSION,
+                privacyVersion = TermsPolicy.REQUIRED_PRIVACY_VERSION
+            )
+            _showPolicyReConsentDialog.value = false
+            _destination.emit(Destination.HOME)
+        }
+    }
+
+    /** 약관 재동의 다이얼로그 취소 처리(스플래시) */
+    fun cancelReConsent() {
+        _showPolicyReConsentDialog.value = false
+        _errorEvents.tryEmit("약관에 동의하지 않아 앱이 종료됩니다.")
+        _exitApp.tryEmit(Unit)
     }
 }

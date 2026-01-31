@@ -233,7 +233,15 @@ fun AppNavGraph(
             // Setting
             composable(Route.SETTING) {
                 SettingRoute(
-                    onMembershipClick = { navController.navigate(Route.MEMBERSHIP) }
+                    onMembershipClick = { navController.navigate(Route.MEMBERSHIP) },
+                    onNavigateToSplash = {
+                        navController.navigate(Route.SPLASH) {
+                            popUpTo(0) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
 

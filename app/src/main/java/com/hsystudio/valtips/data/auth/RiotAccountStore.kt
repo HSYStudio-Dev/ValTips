@@ -72,4 +72,9 @@ class RiotAccountStore @Inject constructor(
             }
         }
     }
+
+    // 저장된 모든 계정 정보 삭제
+    suspend fun clearAll() {
+        context.dataStore.edit { it.clear() }
+    }
 }

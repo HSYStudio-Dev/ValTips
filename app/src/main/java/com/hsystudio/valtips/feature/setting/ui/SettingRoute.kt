@@ -3,6 +3,7 @@ package com.hsystudio.valtips.feature.setting.ui
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -13,9 +14,11 @@ import com.hsystudio.valtips.util.openCustomTab
 @Composable
 fun SettingRoute(
     onMembershipClick: () -> Unit,
+    onNavigateToSplash: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -30,12 +33,16 @@ fun SettingRoute(
                 is SettingUiEffect.NavigateToMembership -> {
                     onMembershipClick()
                 }
+                is SettingUiEffect.NavigateToSplash -> {
+                    onNavigateToSplash()
+                }
             }
         }
     }
 
     SettingScreen(
         uiState = uiState,
+        adState = adState,
         onEvent = viewModel::onEvent
     )
 }

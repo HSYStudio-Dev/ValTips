@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,11 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.map.ui.component.MapInfoSection
 import com.hsystudio.valtips.feature.map.ui.component.MiniMapSection
 import com.hsystudio.valtips.feature.map.ui.component.RecommendedAgentsSection
 import com.hsystudio.valtips.feature.map.viewmodel.MapDetailViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
 import com.hsystudio.valtips.ui.theme.TextGray
 
@@ -37,6 +42,8 @@ fun MapDetailScreen(
     viewModel: MapDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
+    val isProMember by viewModel.isProMember.collectAsStateWithLifecycle()
 
     // 스크롤 상태
     val scroll = rememberScrollState()
@@ -93,17 +100,42 @@ fun MapDetailScreen(
                         verticalArrangement = Arrangement.Top
                     ) {
                         Spacer(Modifier.height(16.dp))
+
                         // 맵 이름 + 사이트 설명
                         MapInfoSection(data)
 
                         Spacer(Modifier.height(16.dp))
+
                         // 추천 요원
                         RecommendedAgentsSection(
                             agents = data.recommendedAgents,
                             size = agentCardSize
                         )
 
+                        // 광고 배너
+                        if (!isProMember) {
+                            Spacer(Modifier.height(8.dp))
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                when (adState) {
+                                    is NativeAdUiState.Loading -> {
+                                        AdLoadingPlaceholder()
+                                    }
+                                    is NativeAdUiState.Error -> {
+                                        AdErrorPlaceholder()
+                                    }
+                                    is NativeAdUiState.Success -> {
+                                        NativeAdBanner(
+                                            nativeAd = (adState as NativeAdUiState.Success).ad,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                         Spacer(Modifier.height(16.dp))
+
                         // 미니맵 + 토글
                         MiniMapSection(
                             data = data,
@@ -114,6 +146,7 @@ fun MapDetailScreen(
                         )
 
                         Spacer(Modifier.height(16.dp))
+
                         // 요원별 스킬 가이드 버튼
                         BorderButton(
                             text = "요원별 스킬 가이드",

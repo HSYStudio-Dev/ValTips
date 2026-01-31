@@ -64,9 +64,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.hsystudio.valtips.R
+import com.hsystudio.valtips.domain.model.NativeAdUiState
 import com.hsystudio.valtips.feature.agent.viewmodel.AgentDetailViewModel
 import com.hsystudio.valtips.ui.component.BorderButton
 import com.hsystudio.valtips.ui.component.IconChip
+import com.hsystudio.valtips.ui.component.ad.AdErrorPlaceholder
+import com.hsystudio.valtips.ui.component.ad.AdLoadingPlaceholder
+import com.hsystudio.valtips.ui.component.ad.NativeAdBanner
 import com.hsystudio.valtips.ui.component.bar.AppTopBar
 import com.hsystudio.valtips.ui.theme.ColorBlack
 import com.hsystudio.valtips.ui.theme.ColorMint
@@ -84,6 +88,8 @@ fun AgentDetailScreen(
     viewModel: AgentDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val adState by viewModel.nativeAdState.collectAsStateWithLifecycle()
+    val isProMember by viewModel.isProMember.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -194,6 +200,28 @@ fun AgentDetailScreen(
                                 color = TextWhite,
                                 textAlign = TextAlign.Left
                             )
+                        }
+
+                        // 광고 배너
+                        if (!isProMember) {
+                            Spacer(Modifier.height(16.dp))
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                when (adState) {
+                                    is NativeAdUiState.Loading -> {
+                                        AdLoadingPlaceholder()
+                                    }
+                                    is NativeAdUiState.Error -> {
+                                        AdErrorPlaceholder()
+                                    }
+                                    is NativeAdUiState.Success -> {
+                                        NativeAdBanner(
+                                            nativeAd = (adState as NativeAdUiState.Success).ad,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         // 경계선
