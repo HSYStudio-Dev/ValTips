@@ -20,8 +20,8 @@ android {
         applicationId = "com.hsystudio.valtips"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -103,6 +103,10 @@ dependencies {
 
     // Google AdMob
     implementation(libs.play.services.ads)
+
+    // Google Play In-App Update 라이브러리
+    implementation(libs.app.update)
+    implementation(libs.app.update.ktx)
 
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.core.ktx)
