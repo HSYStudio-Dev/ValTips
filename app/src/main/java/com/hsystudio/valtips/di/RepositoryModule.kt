@@ -6,6 +6,8 @@ import com.hsystudio.valtips.domain.repository.LineupRepository
 import com.hsystudio.valtips.domain.repository.LineupRepositoryImpl
 import com.hsystudio.valtips.domain.repository.MapRepository
 import com.hsystudio.valtips.domain.repository.MapRepositoryImpl
+import com.hsystudio.valtips.domain.repository.SystemRepository
+import com.hsystudio.valtips.domain.repository.SystemRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,6 +18,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindSystemRepository(
+        impl: SystemRepositoryImpl
+    ): SystemRepository
+
     @Binds
     @Singleton
     abstract fun bindAgentRepository(
