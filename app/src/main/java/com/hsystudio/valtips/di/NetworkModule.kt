@@ -3,6 +3,7 @@ package com.hsystudio.valtips.di
 import com.hsystudio.valtips.BuildConfig
 import com.hsystudio.valtips.data.remote.api.LineupApi
 import com.hsystudio.valtips.data.remote.api.ResourceApi
+import com.hsystudio.valtips.data.remote.api.SystemApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -74,6 +75,11 @@ object NetworkModule {
         .client(client)
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
+
+    @Provides
+    @Singleton
+    fun provideSystemApi(retrofit: Retrofit): SystemApi =
+        retrofit.create(SystemApi::class.java)
 
     @Provides
     @Singleton

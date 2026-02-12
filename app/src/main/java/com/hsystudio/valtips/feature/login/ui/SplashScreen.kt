@@ -44,6 +44,7 @@ import com.hsystudio.valtips.R
 import com.hsystudio.valtips.domain.model.TermsPolicy
 import com.hsystudio.valtips.feature.login.model.Destination
 import com.hsystudio.valtips.feature.login.ui.dialog.DownloadConfirmDialog
+import com.hsystudio.valtips.feature.login.ui.dialog.MaintenanceDialog
 import com.hsystudio.valtips.feature.login.ui.dialog.TermsConsentDialog
 import com.hsystudio.valtips.feature.login.viewmodel.LoginViewModel
 import com.hsystudio.valtips.ui.theme.ColorBG
@@ -65,6 +66,8 @@ fun SplashScreen(
     BackHandler(enabled = true) { }
 
     val context = LocalContext.current
+    val showMaintenanceDialog by viewModel.showMaintenanceDialog.collectAsStateWithLifecycle()
+    val maintenanceMessage by viewModel.maintenanceMessage.collectAsStateWithLifecycle()
     val syncRunning by viewModel.syncRunning.collectAsStateWithLifecycle()
     val syncPhase by viewModel.syncPhase.collectAsStateWithLifecycle()
     val dialogVisible by viewModel.downloadDialogVisible.collectAsStateWithLifecycle()
@@ -197,6 +200,14 @@ fun SplashScreen(
             }
         }
     }
+    // 서버 점검 중 안내 다이얼로그
+    if (showMaintenanceDialog) {
+        MaintenanceDialog(
+            message = maintenanceMessage ?: "현재 서버 점검 중입니다.",
+            onExit = { viewModel.onConfirmMaintenance() }
+        )
+    }
+
     // 리소스 다운 동의 다이얼로그
     if (dialogVisible) {
         DownloadConfirmDialog(
