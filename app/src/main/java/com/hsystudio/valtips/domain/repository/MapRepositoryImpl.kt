@@ -1,0 +1,41 @@
+package com.hsystudio.valtips.domain.repository
+
+import com.hsystudio.valtips.data.local.dao.ActDao
+import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.MapDao
+import com.hsystudio.valtips.data.mapper.toDetailUi
+import com.hsystudio.valtips.domain.model.MapListItem
+import com.hsystudio.valtips.feature.map.model.MapDetailUiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class MapRepositoryImpl @Inject constructor(
+    private val mapDao: MapDao,
+    private val actDao: ActDao,
+    private val agentDao: AgentDao
+) : MapRepository {
+    // 맵 전체에서 리스트 카드에 필요한 정보만 실시간 관찰
+    override fun observeMapCards(): Flow<List<MapListItem>> =
+        mapDao.observeAllMapCards()
+
+    // 현재 액트 표시
+    override fun observeCurrentActName(): Flow<String?> =
+        actDao.observeLatest().map { it?.displayName }
+
+    // 맵 상세 정보 실시간 관찰
+    override fun observeMapDetail(mapUuid: String): Flow<MapDetailUiState?> =
+        combine(
+            mapDao.observeByUuid(mapUuid),
+            agentDao.observeRecAgents()
+        ) { mapEntity, agents ->
+            mapEntity?.toDetailUi(agents)
+        }
+
+    // 특정 맵의 스플래시 로컬 경로 실시간 관찰
+    override fun observeMapSplashLocal(mapUuid: String): Flow<String?> =
+        mapDao.observeByUuid(mapUuid).map { entity ->
+            entity?.splashLocal
+        }
+}

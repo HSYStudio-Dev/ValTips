@@ -1,0 +1,41 @@
+package com.hsystudio.valtips.domain.repository
+
+import com.hsystudio.valtips.data.local.dao.AgentDao
+import com.hsystudio.valtips.data.local.dao.RoleDao
+import com.hsystudio.valtips.data.mapper.toAgentDetailUi
+import com.hsystudio.valtips.data.mapper.organize
+import com.hsystudio.valtips.domain.model.AgentCardItem
+import com.hsystudio.valtips.domain.model.RoleFilterItem
+import com.hsystudio.valtips.feature.agent.model.AgentDetailUiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class AgentRepositoryImpl @Inject constructor(
+    private val agentDao: AgentDao,
+    private val roleDao: RoleDao
+) : AgentRepository {
+    // 역할별 요원 목록 실시간 관찰
+    override fun observeAgents(roleUuid: String?): Flow<List<AgentCardItem>> =
+        if (roleUuid.isNullOrEmpty()) {
+            agentDao.observeAllCards()
+        } else {
+            agentDao.observeCardsByRole(roleUuid)
+        }
+
+    // 역할 필터 목록 조회
+    override suspend fun getRoleFilters(): List<RoleFilterItem> =
+        roleDao.getRoleFilters().organize()
+
+    // 요원 상세 정보 실시간 관찰
+    override fun observeAgentDetail(agentUuid: String): Flow<AgentDetailUiState> =
+        agentDao.observeWithDetails(agentUuid).map { entity ->
+            requireNotNull(entity) { "Agent not found: $agentUuid" }.toAgentDetailUi()
+        }
+
+    // 특정 요원의 카드 정보만 실시간 관찰
+    override fun observeAgentIconLocal(agentUuid: String): Flow<String?> =
+        agentDao.observeWithDetails(agentUuid).map { entity ->
+            entity?.agent?.displayIconLocal
+        }
+}
