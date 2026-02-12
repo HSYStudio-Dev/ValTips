@@ -11,6 +11,7 @@ import com.hsystudio.valtips.data.local.AppPrefsManager
 import com.hsystudio.valtips.data.local.dao.AgentDao
 import com.hsystudio.valtips.data.repository.ResourceRepository
 import com.hsystudio.valtips.domain.model.TermsPolicy
+import com.hsystudio.valtips.domain.repository.SystemRepository
 import com.hsystudio.valtips.feature.login.model.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -32,10 +33,18 @@ import kotlin.math.roundToInt
 class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val prefsManager: AppPrefsManager,
-    private val repository: ResourceRepository,
+    private val systemRepository: SystemRepository,
+    private val resourceRepository: ResourceRepository,
     private val agentDao: AgentDao
 ) : ViewModel() {
     private val tag = "LoginViewModel"
+
+    // --- 점검 다이얼로그 --- //
+    private val _showMaintenanceDialog = MutableStateFlow(false)
+    val showMaintenanceDialog: StateFlow<Boolean> = _showMaintenanceDialog.asStateFlow()
+
+    private val _maintenanceMessage = MutableStateFlow<String?>(null)
+    val maintenanceMessage: StateFlow<String?> = _maintenanceMessage.asStateFlow()
 
     // --- 스플래시 전용 --- //
     // 동기화 상태
@@ -98,38 +107,85 @@ class LoginViewModel @Inject constructor(
     }
 
     /**
-     * 버전 체크 & 동기화 분기
-     * - lastSync가 없으면: 용량 조회 → 동의 다이얼로그 표시
-     * - lastSync가 있으면: 델타 동기화 바로 시작
+     * 앱 시작 로직
+     * 1. 서버 상태 점검 (API 호출)
+     * 2. 점검중(true) -> 다이얼로그 출력 후 정지
+     * 3. 정상(false) -> 기존 동기화 로직(checkAndRunSync) 실행
      */
     fun runStartupFlow() {
         if (_syncRunning.value) return
 
         viewModelScope.launch {
-            try {
-                val last = prefsManager.lastSyncFlow.firstOrNull()
-                if (last.isNullOrBlank()) {
-                    // 초기 실행: 용량 조회 + 동의 다이얼로그
-                    _syncPhase.value = "리소스 정보 확인 중…"
-                    repository.getResourceSize()
-                        .onSuccess { size ->
-                            _downloadSizeMb.value = size
-                            _networkType.value = resolveNetworkType()
-                            _downloadDialogVisible.value = true
-                        }.onFailure { e ->
-                            Log.e(tag, "getResourceSize() 실패", e)
-                            _errorEvents.tryEmit("네트워크 연결이 불안정하여 앱이 종료됩니다.")
-                            _exitApp.tryEmit(Unit)
-                        }
-                } else {
-                    // 재실행: 델타 동기화
-                    startDeltaSyncThenRoute()
-                }
-            } catch (e: Exception) {
-                Log.e(tag, "runStartupFlow() 실패", e)
-                _errorEvents.tryEmit("네트워크 오류로 인해 앱이 종료됩니다.")
+            _syncRunning.value = true
+            _syncPhase.value = "서버 상태 확인 중…"
+
+            // 1. 서버 점검 상태 확인
+            val statusResult = systemRepository.getSystemStatus()
+
+            val status = statusResult.getOrNull()
+            // 통신 실패
+            if (status == null) {
+                Log.e(tag, "runStartupFlow() 실패", statusResult.exceptionOrNull())
+                _syncRunning.value = false
+                _syncPhase.value = null
+                _errorEvents.tryEmit("네트워크 연결이 불안정하여 앱이 종료됩니다.")
                 _exitApp.tryEmit(Unit)
+                return@launch
             }
+
+            if (status.isMaintenance) {
+                // 2. [점검중] 다이얼로그 출력
+                _maintenanceMessage.value = status.maintenanceMessage
+                _showMaintenanceDialog.value = true
+                _syncRunning.value = false
+                _syncPhase.value = null
+                return@launch
+            }
+
+            // 3. [정상] 기존 동기화 로직 실행
+            _syncRunning.value = false
+            checkAndRunSync()
+        }
+    }
+
+    // 점검 다이얼로그 확인 버튼 클릭 시 앱 종료
+    fun onConfirmMaintenance() {
+        _showMaintenanceDialog.value = false
+        _maintenanceMessage.value = null
+        _exitApp.tryEmit(Unit)
+    }
+
+    /**
+     * 버전 체크 & 동기화 분기
+     * - lastSync가 없으면: 용량 조회 → 동의 다이얼로그 표시
+     * - lastSync가 있으면: 델타 동기화 바로 시작
+     */
+    private suspend fun checkAndRunSync() {
+        if (_syncRunning.value) return
+
+        try {
+            val last = prefsManager.lastSyncFlow.firstOrNull()
+            if (last.isNullOrBlank()) {
+                // 초기 실행: 용량 조회 + 동의 다이얼로그
+                _syncPhase.value = "리소스 정보 확인 중…"
+                resourceRepository.getResourceSize()
+                    .onSuccess { size ->
+                        _downloadSizeMb.value = size
+                        _networkType.value = resolveNetworkType()
+                        _downloadDialogVisible.value = true
+                    }.onFailure { e ->
+                        Log.e(tag, "getResourceSize() 실패", e)
+                        _errorEvents.tryEmit("네트워크 연결이 불안정하여 앱이 종료됩니다.")
+                        _exitApp.tryEmit(Unit)
+                    }
+            } else {
+                // 재실행: 델타 동기화
+                startDeltaSyncThenRoute()
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "checkAndRunSync() 실패", e)
+            _errorEvents.tryEmit("네트워크 오류로 인해 앱이 종료됩니다.")
+            _exitApp.tryEmit(Unit)
         }
     }
 
@@ -163,7 +219,7 @@ class LoginViewModel @Inject constructor(
         _syncPhase.value = "필수 리소스 다운로드 중…"
 
         viewModelScope.launch {
-            repository.initialSync(onProgressBytes = { done, total, read, totalBytes, bps ->
+            resourceRepository.initialSync(onProgressBytes = { done, total, read, totalBytes, bps ->
                 val percent = if (totalBytes > 0) {
                     ((read.toDouble() / totalBytes.toDouble()) * 100).roundToInt()
                 } else {
@@ -201,7 +257,7 @@ class LoginViewModel @Inject constructor(
         _syncPhase.value = "버전 확인 중…"
 
         viewModelScope.launch {
-            repository.deltaSync(onProgressBytes = { done, total, read, totalBytes, bps ->
+            resourceRepository.deltaSync(onProgressBytes = { done, total, read, totalBytes, bps ->
                 val percent = if (totalBytes > 0) {
                     ((read.toDouble() / totalBytes.toDouble()) * 100).roundToInt()
                 } else {
